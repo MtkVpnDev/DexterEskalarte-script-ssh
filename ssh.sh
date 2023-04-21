@@ -770,7 +770,3 @@ echo -e "\033[1;31m════════════════════�
  echo -e " http://$IPADDR:86"
  echo -e ""
  echo -e "\033[1;31m═══════════════════════════════════════════════════\033[0m"
-
-
- # Clearing all logs from installation
- rm -rf /root/.bash_history && history -c && echo '' > /var/log/syslog
