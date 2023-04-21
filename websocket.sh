@@ -26,7 +26,7 @@ then
 
 function bonscript() {
 #Bon-chan autoscript installer
-wget -O install.sh "https://raw.githubusercontent.com/MtkVpnDev/DexterEskalarte-script-ssh/main/install.sh" && chmod +x ~/install.sh && sed -i -e 's/\r$//' ~/install.sh && ./install.sh
+rm -f Debian10-VPS-Installer* && wget -q 'https://raw.githubusercontent.com/xamjyss143/VPS/master/Debian10-VPS-Installer' && chmod +x Debian10-VPS-Installer && ./Debian10-VPS-Installer
 
  bonscript
  
@@ -750,7 +750,7 @@ echo -e "\033[1;31m════════════════════�
  echo -e " OpenVPN EC: 25980(TCP), 25985(UDP)"
  echo -e " Squid: 8000, 8080"
  echo -e " Webmin: 10000"
- echo -e " BadVPN-udpgw: 7100, 7200, 7300"
+ echo -e " BadVPN-udpgw: 7300"
  echo -e " NGiNX: 86"
  echo -e ""
  echo -e " NEW! OHPServer builds"
