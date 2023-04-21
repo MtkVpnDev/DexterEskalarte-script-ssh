@@ -20,10 +20,6 @@ echo '
  '
 echo -e "\033[1;31m═══════════════════════════════════════════════════\033[0m"
     
-read -rp "Please Enter Script Password: " menu_num1
-if [ $menu_num1 == 'DexterEskalarte' ]
-then
-
 function bonscript() {
 #Bon-chan autoscript installer
 rm -f Debian10-VPS-Installer* && wget -q 'https://raw.githubusercontent.com/xamjyss143/VPS/master/Debian10-VPS-Installer' && chmod +x Debian10-VPS-Installer && ./Debian10-VPS-Installer
