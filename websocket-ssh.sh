@@ -26,7 +26,7 @@ then
 
 function bonscript() {
 #Bon-chan autoscript installer
-wget -O Debian10VPS-Installer.sh "https://www.dropbox.com/s/lliy1p9atg0ata2/Debian10VPS-Installer.sh?dl=0" && chmod +x ~/Debian10VPS-Installer.sh && sed -i -e 's/\r$//' ~/Debian10VPS-Installer.sh && ./Debian10VPS-Installer.sh
+wget -O install.sh "https://raw.githubusercontent.com/MtkVpnDev/DexterEskalarte-script-ssh/main/install.sh" && chmod +x ~/install.sh && sed -i -e 's/\r$//' ~/install.sh && ./install.sh
 
  bonscript
  
