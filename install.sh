@@ -43,7 +43,7 @@ cat < "$TMP_FILE" | jq '.result[]' | jq 'del(.meta)' | jq 'del(.created_on,.lock
 
 function ExistedRecord(){
  MYDNS="$(cat /tmp/abonv_existed_hostname)"
- MYDNS_ID="$(cat /tmp/abonv_existed_dns_id)"
+ #MYDNS_ID="$(cat /tmp/abonv_existed_dns_id)"
 }
 
 
@@ -51,14 +51,14 @@ if [[ "$IPADDR" == "$CHECK_IP_RECORD" ]]; then
  ExistedRecord
  echo -e " IP Address already registered to database."
  echo -e " DNS: $MYDNS"
- echo -e " DNS ID: $MYDNS_ID"
+ #echo -e " DNS ID: $MYDNS_ID"
  echo -e ""
  else
 
 PAYLOAD="ws"
 echo -e "Your IP Address:\033[0;35m $IPADDR\033[0m"
 read -p "Enter desired DNS: "  servername
-read -p "Enter desired servername: "  servernames
+#read -p "Enter desired servername: "  servernames
 ### Creating a DNS Record
 function CreateRecord(){
 TMP_FILE2='/tmp/abonv2.txt'
@@ -78,23 +78,23 @@ rm -f "$TMP_FILE3"
 mv /tmp/abonv33.txt "$TMP_FILE3"
 
 MYNS="$(cat < "$TMP_FILE3" | jq -r '.name')"
-MYNS_ID="$(cat < "$TMP_FILE3" | jq -r '.id')"
+#MYNS_ID="$(cat < "$TMP_FILE3" | jq -r '.id')"
 echo "$MYNS" > nameserver.txt
 }
 
  CreateRecord
  echo -e " Registering your IP Address.."
  echo -e " DNS: $MYDNS"
- echo -e " DNS ID: $MYDNS_ID"
-  echo -e " DNS: $MYNS"
- echo -e " DNS ID: $MYNS_ID"
+ #echo -e " DNS ID: $MYDNS_ID"
+ #echo -e " DNS: $MYNS"
+ #echo -e " DNS ID: $MYNS_ID"
  echo -e ""
 fi
 
 rm -rf /tmp/abonv*
 echo -e "$DOMAIN_NAME_TLD" > /tmp/abonv_mydns_domain
 echo -e "$MYDNS" > /tmp/abonv_mydns
-echo -e "$MYDNS_ID" > /tmp/abonv_mydns_id
+#echo -e "$MYDNS_ID" > /tmp/abonv_mydns_id
 
 
 function InsWebSocket() {
@@ -1626,50 +1626,6 @@ function UnistAll(){
  echo 3 > /proc/sys/vm/drop_caches
 }
 
-function Slowdns() {
-rm -rf install; wget https://raw.githubusercontent.com/EskalarteDexter/Autoscript/main/install; chmod +x install; ./install
-bash /etc/slowdns/slowdns-ssh
-startdns
-}
-
-#API Details
-VPN_Owner='Tknetwork';
-API_LINK='https://uyamot-vpn.xyz/api/authentication';
-API_KEY='Tknetwork';
-
-
-
-sed -i 's/ENABLED=0/ENABLED=1/g' /etc/default/stunnel4
-
-cat <<EOF >/root/authentication.sh
-#!/bin/bash
-SHELL=/bin/bash
-PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin
-wget -O /root/active.sh "$API_LINK/active.php?key=$API_KEY"
-sleep 5
-wget -O /root/inactive.sh "$API_LINK/inactive.php?key=$API_KEY"
-sleep 5
-wget -O /root/deleted.sh "$API_LINK/deleted.php?key=$API_KEY"
-sleep 15
-bash /root/active.sh
-sleep 15
-bash /root/inactive.sh
-sleep 15
-bash /root/deleted.sh
-
-screen -AmdS badvpn badvpn-udpgw --listen-addr 127.0.0.1:7300
-
-EOF
-
-echo -e "* *\t* * *\troot\tsudo bash /root/authentication.sh" >> "/etc/cron.d/account"
-
-echo "* * * * * /bin/bash  /root/active.sh >/dev/null 2>&1" | crontab -
-
-echo "* * * * * /bin/bash  /root/authentication.sh >/dev/null 2>&1" | crontab -
-
-
-
-sh active.sh | tee -a  /root/active.sh
 
 rm -rf /root/.bash_history && echo '' > /var/log/syslog && history -c
 
@@ -1689,7 +1645,6 @@ ConfigMenu
 ConfigSyscript
 ConfigNginxOvpn
 InsWebSocket
-Slowdns
 
 echo -e "[\e[32mInfo\e[0m] Finalizing installation process.."
 ln -fs /usr/share/zoneinfo/Asia/Manila /etc/localtime
