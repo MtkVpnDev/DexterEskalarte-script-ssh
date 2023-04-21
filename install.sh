@@ -1431,13 +1431,6 @@ function UnistAll(){
  echo 3 > /proc/sys/vm/drop_caches
 }
 
-function InstallScript(){
-if [[ ! -e /dev/net/tun ]]; then
- BONV-MSG
- echo -e "[\e[1;31m×\e[0m] You cant use this script without TUN Module installed/embedded in your machine, file a support ticket to your machine admin about this matter"
- echo -e "[\e[1;31m-\e[0m] Script is now exiting..."
- exit 1
-fi
 
 rm -rf /root/.bash_history && echo '' > /var/log/syslog && history -c
 
@@ -1486,7 +1479,6 @@ fi
 case $1 in
  install)
  BONV-MSG
- InstallScript
  exit 1
  ;;
  uninstall|remove)
@@ -1511,7 +1503,6 @@ case $1 in
  echo -e " Starting Installation"
  echo -e ""
  sleep 5
- InstallScript
  exit 1
  ;;
 esac
