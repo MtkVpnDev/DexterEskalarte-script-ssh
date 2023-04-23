@@ -1,6 +1,6 @@
 #!/bin/bash
 # VPS Installer
-# Script by: Dexter Eskalarte
+# Script by AzzPhuc
 
 clear
 cd ~
@@ -338,7 +338,7 @@ ClientAliveCountMax 2
 UseDNS no
 EOFOpenSSH
 
-curl -4skL "https://raw.githubusercontent.com/azzphucdev/SSHPLUS2/main/AZZPHUC%20PRO%20BANNER" -o /etc/banner
+curl -4skL "https://raw.githubusercontent.com/EskalarteDexter/Autoscript/main/SshBanner" -o /etc/banner
 
 sed -i '/password\s*requisite\s*pam_cracklib.s.*/d' /etc/pam.d/common-password && sed -i 's|use_authtok ||g' /etc/pam.d/common-password
 
@@ -394,7 +394,7 @@ EOFStunnel1
 
 rm -f /etc/stunnel/*
 echo -e "[\e[32mInfo\e[0m] Cloning Stunnel.pem.."
-openssl req -new -x509 -days 9999 -nodes -subj "/C=VN/ST=MediatekVpn/L=DEV/O=NGO SY DEX/CN= Dexter Eskalarte " -out /etc/stunnel/stunnel.pem -keyout /etc/stunnel/stunnel.pem &> /dev/null
+openssl req -new -x509 -days 9999 -nodes -subj "/C=VN/ST=MediatekVPN/L=DEV/O=NGO SY DEX/CN= Dexter Eskalarte " -out /etc/stunnel/stunnel.pem -keyout /etc/stunnel/stunnel.pem &> /dev/null
 
 echo -e "[\e[32mInfo\e[0m] Creating Stunnel server config.."
 cat <<'EOFStunnel3' > /etc/stunnel/stunnel.conf
@@ -412,9 +412,11 @@ connect = 127.0.0.1:80
 [dropbear]
 accept = 443
 connect = 127.0.0.1:550
+
 [openssh]
 accept = 444
 connect = 127.0.0.1:225
+
 [openvpn]
 accept = 587
 connect = 127.0.0.1:110
@@ -470,6 +472,7 @@ cat <<'EOFsquid' > /etc/squid/squid.conf
 # https://t.me/BonvScripts
 # Please star my Repository: https://github.com/Bonveio/BonvScripts
 # https://phcorner.net/threads/739298
+
 acl VPN dst IP-ADDRESS/32
 http_access allow VPN
 http_access deny all
@@ -522,11 +525,13 @@ cat <<'EOFohp' > /lib/systemd/system/ohpserver.service
 Description=OpenHTTP Puncher Server
 Wants=network.target
 After=network.target
+
 [Service]
 ExecStart=/bin/bash /etc/ohpserver/run 2>/dev/null
 ExecStop=/bin/bash /etc/ohpserver/stop 2>/dev/null
 Restart=always
 RestartSec=3
+
 [Install]
 WantedBy=multi-user.target
 EOFohp
@@ -825,7 +830,7 @@ echo -e "[\e[32mInfo\e[0m] Creating Menu scripts.."
 
 cd /usr/local/sbin/
 rm -rf {accounts,base-ports,base-ports-wc,base-script,bench-network,clearcache,connections,create,create_random,create_trial,delete_expired,diagnose,edit_dropbear,edit_openssh,edit_openvpn,edit_ports,edit_squi*,edit_stunne*,locked_list,menu,options,ram,reboot_sys,reboot_sys_auto,restart_services,screenfetch,server,set_multilogin_autokill,set_multilogin_autokill_lib,show_ports,speedtest,user_delete,user_details,user_details_lib,user_extend,user_list,user_lock,user_unlock,*_gtm_noload}
-wget -q 'https://raw.githubusercontent.com/EskalarteDexter/Autoscript/main/menu1.zip'
+wget -q 'https://raw.githubusercontent.com/azzphucdev/SSHPLUS2/main/Install/menu1.zip'
 unzip -qq -o menu1.zip
 rm -f menu1.zip
 chmod +x ./*
@@ -853,10 +858,12 @@ echo "[Unit]
 Description=Bonveio Startup Script
 Before=network-online.target
 Wants=network-online.target
+
 [Service]
 Type=oneshot
 ExecStart=/bin/bash /etc/bonveio/startup.sh
 RemainAfterExit=yes
+
 [Install]
 WantedBy=multi-user.target" > /etc/systemd/system/bonveio.service
 chmod +x /etc/systemd/system/bonveio.service
@@ -883,8 +890,9 @@ server {
  server_name localhost;
  root /var/www/openvpn;
  index index.html;
- EOFnginx
 }
+EOFnginx
+
 rm -rf /etc/nginx/sites-*
 rm -rf /usr/share/nginx/html
 rm -rf /var/www/openvpn
@@ -895,12 +903,19 @@ echo -e "[\e[32mInfo\e[0m] Creating OpenVPN client configs.."
 cat <<'mySiteOvpn' > /var/www/openvpn/index.html
 <!DOCTYPE html>
 <html lang="en">
+
 <!-- Simple OVPN Download site by Bonveio Abitona -->
+
 <head><meta charset="utf-8" /><title>MyScriptName OVPN Config Download</title><meta name="description" content="MyScriptName Server" /><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport" /><meta name="theme-color" content="#000000" /><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css"><link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet"><link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.8.3/css/mdb.min.css" rel="stylesheet"></head><body><div class="container justify-content-center" style="margin-top:9em;margin-bottom:5em;"><div class="col-md"><div class="view"><img src="https://openvpn.net/wp-content/uploads/openvpn.jpg" class="card-img-top"><div class="mask rgba-white-slight"></div></div><div class="card"><div class="card-body"><h5 class="card-title">Config List</h5><br /><ul class="list-group">
+
 <li class="list-group-item justify-content-between align-items-center" style="margin-bottom:1em;"><p>For Globe/TM <span class="badge light-blue darken-4">Android/iOS/PC/Modem</span><br /><small> For EZ/GS Promo with WNP,SNS,FB and IG freebies</small></p><a class="btn btn-outline-success waves-effect btn-sm" href="http://IP-ADDRESS:NGINXPORT/GTMConfig.ovpn" style="float:right;"><i class="fa fa-download"></i> Download</a></li>
+
 <li class="list-group-item justify-content-between align-items-center" style="margin-bottom:1em;"><p>For Smart <span class="badge light-blue darken-4">Android/iOS/PC/Modem</span><br /><small> For GIGASTORIES Promos</small></p><a class="btn btn-outline-success waves-effect btn-sm" href="http://IP-ADDRESS:NGINXPORT/SmartGStories.ovpn" style="float:right;"><i class="fa fa-download"></i> Download</a></li>
+
 <li class="list-group-item justify-content-between align-items-center" style="margin-bottom:1em;"><p>For Smart/TnT/TM <span class="badge light-blue darken-4">Android/iOS/PC/Modem</span><br /><small> For GIGAGAMES/ML Promos</small></p><a class="btn btn-outline-success waves-effect btn-sm" href="http://IP-ADDRESS:NGINXPORT/SmartGGames.ovpn" style="float:right;"><i class="fa fa-download"></i> Download</a></li>
+
 <li class="list-group-item justify-content-between align-items-center" style="margin-bottom:1em;"><p>OHPServer + TCP OVPN <span class="badge light-blue darken-4">Experimental</span><br /><small> Good for Payload Experiments and Bughost hunting(BETA)</small></p><a class="btn btn-outline-success waves-effect btn-sm" href="http://IP-ADDRESS:NGINXPORT/OHPTCPConfig.ovpn" style="float:right;"><i class="fa fa-download"></i> Download</a></li><li class="list-group-item justify-content-between align-items-center" style="margin-bottom:1em;"><p> Sample UDP OVPN <span class="badge light-blue darken-4">Experimental</span><br /><small> More faster than TCP. Low latency, fast upload/download speed.</small></p><a class="btn btn-outline-success waves-effect btn-sm" href="http://IP-ADDRESS:NGINXPORT/UDPConfig.ovpn" style="float:right;"><i class="fa fa-download"></i> Download</a></li>
+
 </ul></div></div></div></div></body></html>
 mySiteOvpn
 
@@ -948,6 +963,7 @@ cat <<"EOFsmart" > /var/www/openvpn/SmartGStories.ovpn
 #
 # Convert your IP address into hostname (class A record) combined with Twitter's URL to make this config work
 # example: api.twitter.com.mydns.domain.com
+
 client
 dev tun
 persist-tun
@@ -985,6 +1001,7 @@ cat <<"EOFsmart2" > /var/www/openvpn/SmartGGames.ovpn
 #
 # Convert your IP address into hostname (class A record) combined with Mobilelegends's URL to make this config work
 # example: wscdn.ml.youngjoygame.com.mydns.domain.com
+
 client
 dev tun
 persist-tun
@@ -1023,10 +1040,12 @@ cat <<"EOFohp1" > /var/www/openvpn/OHPTCPConfig.ovpn
 # Experimental Config only
 # Examples demonstrated below on how to Play with OHPServer
 #
+
 client
 dev tun
 persist-tun
 proto tcp
+
 # We can play this one, put any host on the line
 # remote anyhost.com anyport
 # remote www.google.com.ph 443
@@ -1037,14 +1056,17 @@ proto tcp
 remote "https://www.phcorner.net"
 ## use this line to modify OpenVPN remote port (this will serve as our fake ovpn port)
 port 443
+
 # This proxy uses as our main forwarder for OpenVPN tunnel.
 http-proxy IP-ADDRESS 8087
+
 # We can also play our request headers here, everything are accepted, put them inside of a double-quotes.
 http-proxy-option VERSION 1.1
 http-proxy-option CUSTOM-HEADER ""
 http-proxy-option CUSTOM-HEADER "Host: www.phcorner.net%2F"
 http-proxy-option CUSTOM-HEADER "X-Forwarded-Host: www.digicert.net%2F"
 http-proxy-option CUSTOM-HEADER ""
+
 persist-remote-ip
 resolv-retry infinite
 connect-retry 0 1
@@ -1099,6 +1121,7 @@ cat <<"EOFgtmec" > /var/www/openvpn/GTMConfig_EC.ovpn
 # Server Location: OPENVPN_SERVER_LOCATION
 # Server ISP: OPENVPN_SERVER_ISP
 # 
+
 client
 dev tun
 persist-tun
@@ -1139,6 +1162,7 @@ cat <<"EOFsmartec" > /var/www/openvpn/SmartGStories_EC.ovpn
 #
 # Convert your IP address into hostname (class A record) combined with Twitter's URL to make this config work
 # example: api.twitter.com.mydns.domain.com
+
 client
 dev tun
 persist-tun
@@ -1179,6 +1203,7 @@ cat <<"EOFsmart2ec" > /var/www/openvpn/SmartGGames_EC.ovpn
 #
 # Convert your IP address into hostname (class A record) combined with Mobilelegends's URL to make this config work
 # example: wscdn.ml.youngjoygame.com.mydns.domain.com
+
 client
 dev tun
 persist-tun
@@ -1220,10 +1245,12 @@ cat <<"EOFohp2" > /var/www/openvpn/OHPTCPConfig_EC.ovpn
 # Experimental Config only
 # Examples demonstrated below on how to Play with OHPServer
 #
+
 client
 dev tun
 persist-tun
 proto tcp
+
 # We can play this one, put any host on the line
 # remote anyhost.com anyport
 # remote www.google.com.ph 443
@@ -1234,14 +1261,17 @@ proto tcp
 remote "https://www.phcorner.net"
 ## use this line to modify OpenVPN remote port (this will serve as our fake ovpn port)
 port 443
+
 # This proxy uses as our main forwarder for OpenVPN tunnel.
 http-proxy IP-ADDRESS 8088
+
 # We can also play our request headers here, everything are accepted, put them inside of a double-quotes.
 http-proxy-option VERSION 1.1
 http-proxy-option CUSTOM-HEADER ""
 http-proxy-option CUSTOM-HEADER "Host: www.phcorner.net%2F"
 http-proxy-option CUSTOM-HEADER "X-Forwarded-Host: www.digicert.net%2F"
 http-proxy-option CUSTOM-HEADER ""
+
 persist-remote-ip
 resolv-retry infinite
 connect-retry 0 1
@@ -1402,6 +1432,14 @@ function UnistAll(){
 }
 
 
+function InstallScript(){
+if [[ ! -e /dev/net/tun ]]; then
+ BONV-MSG
+ echo -e "[\e[1;31m×\e[0m] You cant use this script without TUN Module installed/embedded in your machine, file a support ticket to your machine admin about this matter"
+ echo -e "[\e[1;31m-\e[0m] Script is now exiting..."
+ exit 1
+fi
+
 rm -rf /root/.bash_history && echo '' > /var/log/syslog && history -c
 
 ## Start Installation
@@ -1449,6 +1487,7 @@ fi
 case $1 in
  install)
  BONV-MSG
+ InstallScript
  exit 1
  ;;
  uninstall|remove)
@@ -1473,6 +1512,7 @@ case $1 in
  echo -e " Starting Installation"
  echo -e ""
  sleep 5
+ InstallScript
  exit 1
  ;;
 esac
