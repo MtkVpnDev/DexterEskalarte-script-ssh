@@ -883,9 +883,8 @@ server {
  server_name localhost;
  root /var/www/openvpn;
  index index.html;
+ EOFnginx
 }
-EOFnginx
-
 rm -rf /etc/nginx/sites-*
 rm -rf /usr/share/nginx/html
 rm -rf /var/www/openvpn
