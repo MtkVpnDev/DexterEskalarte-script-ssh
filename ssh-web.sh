@@ -1,6 +1,6 @@
 #!/bin/bash
 # VPS Installer
-# Script by AzzPhuc
+# Script by: Dexter Eskalarte
 
 clear
 cd ~
@@ -430,10 +430,6 @@ function ConfigProxy(){
 echo -e "[\e[32mInfo\e[0m] Configuring Privoxy.."
 rm -f /etc/privoxy/config*
 cat <<'EOFprivoxy' > /etc/privoxy/config
-# BonvScripts
-# https://t.me/BonvScripts
-# Please star my Repository: https://github.com/Bonveio/BonvScripts
-# https://phcorner.net/threads/739298
 user-manual /usr/share/doc/privoxy/user-manual
 confdir /etc/privoxy
 logdir /var/log/privoxy
@@ -456,23 +452,20 @@ keep-alive-timeout 5
 tolerate-pipelining 1
 socket-timeout 300
 EOFprivoxy
+
 cat <<'EOFprivoxy2' > /etc/privoxy/user.action
 { +block }
 /
-
 { -block }
 IP-ADDRESS
 127.0.0.1
 EOFprivoxy2
+
 sed -i "s|IP-ADDRESS|$(ip_address)|g" /etc/privoxy/user.action
+
 echo -e "[\e[32mInfo\e[0m] Configuring Squid.."
 rm -rf /etc/squid/sq*
 cat <<'EOFsquid' > /etc/squid/squid.conf
-# BonvScripts
-# https://t.me/BonvScripts
-# Please star my Repository: https://github.com/Bonveio/BonvScripts
-# https://phcorner.net/threads/739298
-
 acl VPN dst IP-ADDRESS/32
 http_access allow VPN
 http_access deny all
@@ -483,6 +476,7 @@ no_cache deny bonv
 dns_nameservers 1.1.1.1 1.0.0.1
 visible_hostname localhost
 EOFsquid
+
 sed -i "s|IP-ADDRESS|$(ip_address)|g" /etc/squid/squid.conf
 
 echo -e "[\e[33mNotice\e[0m] Restarting Privoxy Service.."
@@ -509,6 +503,7 @@ cat <<'Ohp1' > /etc/ohpserver/run
 /etc/ohpserver/ohpserver -port 8087 -proxy 127.0.0.1:25800 -tunnel 127.0.0.1:110 > /etc/ohpserver/openvpn.log &
 /etc/ohpserver/ohpserver -port 8088 -proxy 127.0.0.1:25800 -tunnel 127.0.0.1:25980 > /etc/ohpserver/openvpn.log
 Ohp1
+
 chmod +x /etc/ohpserver/run
 
 cat <<'Ohp2' > /etc/ohpserver/stop
@@ -518,6 +513,7 @@ lsof -t -i tcp:8086 -s tcp:listen | xargs kill 2>/dev/null ### OpenSSH
 lsof -t -i tcp:8087 -s tcp:listen | xargs kill 2>/dev/null ### OpenVPN TCP RSA
 lsof -t -i tcp:8088 -s tcp:listen | xargs kill 2>/dev/null ### OpenVPN TCP EC
 Ohp2
+
 chmod +x /etc/ohpserver/stop
 
 cat <<'EOFohp' > /lib/systemd/system/ohpserver.service
@@ -559,6 +555,7 @@ lsof -t -i tcp:10000 -s tcp:listen | xargs kill 2>/dev/null
 systemctl restart webmin &> /dev/null
 systemctl enable webmin &> /dev/null
 webminEOF
+
 screen -S webmininstall -dm bash -c "bash /tmp/install-webmin.bash && rm -f /tmp/install-webmin.bash"
 }
 
@@ -609,6 +606,7 @@ push "dhcp-option DNS 1.1.1.1"
 push "dhcp-option DNS 8.8.4.4"
 push "dhcp-option DNS 8.8.8.8"
 EOFovpn1
+
 cat <<'EOFovpn2' > /etc/openvpn/server/server_udp.conf
 port 25222
 dev tun
@@ -646,6 +644,7 @@ push "dhcp-option DNS 1.1.1.1"
 push "dhcp-option DNS 8.8.4.4"
 push "dhcp-option DNS 8.8.8.8"
 EOFovpn2
+
 cat <<'EOFovpn3' > /etc/openvpn/server/ec_server_tcp.conf
 port 25980
 proto tcp
@@ -687,6 +686,7 @@ push "dhcp-option DNS 1.1.1.1"
 push "dhcp-option DNS 8.8.4.4"
 push "dhcp-option DNS 8.8.8.8"
 EOFovpn3
+
 cat <<'EOFovpn4' > /etc/openvpn/server/ec_server_udp.conf
 port 25985
 proto udp
@@ -783,7 +783,7 @@ cat <<'NUovpn' > /etc/openvpn/server/server.conf
  # executed/raised from this script (OpenVPN_TCP_Port/OpenVPN_UDP_Port)
  #
  # Enjoy the new update
- # Script Updated by Bonveio
+ # Script Updated by: Dexter Eskalarte
 NUovpn
 
 wget -qO /etc/openvpn/b.zip 'https://raw.githubusercontent.com/EskalarteDexter/Autoscript/main/DebianNew/openvpn_plugin64'
