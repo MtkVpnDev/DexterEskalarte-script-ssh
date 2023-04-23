@@ -779,10 +779,6 @@ echo -e "\033[1;31m════════════════════�
  echo -e ""
  echo -e "\033[1;31m═══════════════════════════════════════════════════\033[0m"
 
-
- # Clearing all logs from installation
- rm -rf /root/.bash_history && history -c && echo '' > /var/log/syslog
-
  echo -e "Reboot in 5 Seconds"
  reboot
 
