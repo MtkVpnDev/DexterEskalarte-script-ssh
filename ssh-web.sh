@@ -393,7 +393,7 @@ EOFStunnel1
 
 rm -f /etc/stunnel/*
 echo -e "[\e[32mInfo\e[0m] Cloning Stunnel.pem.."
-openssl req -new -x509 -days 9999 -nodes -subj "/C=VN/ST=AZZPHUC/L=DEV/O=NGO SY PHUC/CN= AZZPHUC PRO - Unlimited " -out /etc/stunnel/stunnel.pem -keyout /etc/stunnel/stunnel.pem &> /dev/null
+openssl req -new -x509 -days 9999 -nodes -subj "/C=VN/ST=MediatekVpn/L=DEV/O=NGO SY PHUC/CN= Dexter Eskalarte " -out /etc/stunnel/stunnel.pem -keyout /etc/stunnel/stunnel.pem &> /dev/null
 
 echo -e "[\e[32mInfo\e[0m] Creating Stunnel server config.."
 cat <<'EOFStunnel3' > /etc/stunnel/stunnel.conf
