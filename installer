@@ -20,9 +20,7 @@ echo '
  '
 echo -e "\033[1;31m═══════════════════════════════════════════════════\033[0m"
     
-read -rp "Please Enter Script Password: " menu_num1
-if [ $menu_num1 == 'DexterEskalarte' ]
-then
+
 
 function bonscript() {
 #Bon-chan autoscript installer
@@ -778,7 +776,3 @@ echo -e "\033[1;31m════════════════════�
  echo -e " http://$IPADDR:86"
  echo -e ""
  echo -e "\033[1;31m═══════════════════════════════════════════════════\033[0m"
-
- echo -e "Reboot in 5 Seconds"
- reboot
-
