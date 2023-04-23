@@ -393,7 +393,7 @@ EOFStunnel1
 
 rm -f /etc/stunnel/*
 echo -e "[\e[32mInfo\e[0m] Cloning Stunnel.pem.."
-openssl req -new -x509 -days 9999 -nodes -subj "/C=VN/ST=MediatekVpn/L=DEV/O=NGO SY PHUC/CN= Dexter Eskalarte " -out /etc/stunnel/stunnel.pem -keyout /etc/stunnel/stunnel.pem &> /dev/null
+openssl req -new -x509 -days 9999 -nodes -subj "/C=VN/ST=MediatekVpn/L=DEV/O=NGO SY DEX/CN= Dexter Eskalarte " -out /etc/stunnel/stunnel.pem -keyout /etc/stunnel/stunnel.pem &> /dev/null
 
 echo -e "[\e[32mInfo\e[0m] Creating Stunnel server config.."
 cat <<'EOFStunnel3' > /etc/stunnel/stunnel.conf
@@ -411,11 +411,9 @@ connect = 127.0.0.1:80
 [dropbear]
 accept = 443
 connect = 127.0.0.1:550
-
 [openssh]
 accept = 444
 connect = 127.0.0.1:225
-
 [openvpn]
 accept = 587
 connect = 127.0.0.1:110
@@ -430,6 +428,10 @@ function ConfigProxy(){
 echo -e "[\e[32mInfo\e[0m] Configuring Privoxy.."
 rm -f /etc/privoxy/config*
 cat <<'EOFprivoxy' > /etc/privoxy/config
+# BonvScripts
+# https://t.me/BonvScripts
+# Please star my Repository: https://github.com/Bonveio/BonvScripts
+# https://phcorner.net/threads/739298
 user-manual /usr/share/doc/privoxy/user-manual
 confdir /etc/privoxy
 logdir /var/log/privoxy
@@ -452,7 +454,6 @@ keep-alive-timeout 5
 tolerate-pipelining 1
 socket-timeout 300
 EOFprivoxy
-
 cat <<'EOFprivoxy2' > /etc/privoxy/user.action
 { +block }
 /
@@ -460,12 +461,14 @@ cat <<'EOFprivoxy2' > /etc/privoxy/user.action
 IP-ADDRESS
 127.0.0.1
 EOFprivoxy2
-
 sed -i "s|IP-ADDRESS|$(ip_address)|g" /etc/privoxy/user.action
-
 echo -e "[\e[32mInfo\e[0m] Configuring Squid.."
 rm -rf /etc/squid/sq*
 cat <<'EOFsquid' > /etc/squid/squid.conf
+# BonvScripts
+# https://t.me/BonvScripts
+# Please star my Repository: https://github.com/Bonveio/BonvScripts
+# https://phcorner.net/threads/739298
 acl VPN dst IP-ADDRESS/32
 http_access allow VPN
 http_access deny all
@@ -476,7 +479,6 @@ no_cache deny bonv
 dns_nameservers 1.1.1.1 1.0.0.1
 visible_hostname localhost
 EOFsquid
-
 sed -i "s|IP-ADDRESS|$(ip_address)|g" /etc/squid/squid.conf
 
 echo -e "[\e[33mNotice\e[0m] Restarting Privoxy Service.."
@@ -503,7 +505,6 @@ cat <<'Ohp1' > /etc/ohpserver/run
 /etc/ohpserver/ohpserver -port 8087 -proxy 127.0.0.1:25800 -tunnel 127.0.0.1:110 > /etc/ohpserver/openvpn.log &
 /etc/ohpserver/ohpserver -port 8088 -proxy 127.0.0.1:25800 -tunnel 127.0.0.1:25980 > /etc/ohpserver/openvpn.log
 Ohp1
-
 chmod +x /etc/ohpserver/run
 
 cat <<'Ohp2' > /etc/ohpserver/stop
@@ -513,7 +514,6 @@ lsof -t -i tcp:8086 -s tcp:listen | xargs kill 2>/dev/null ### OpenSSH
 lsof -t -i tcp:8087 -s tcp:listen | xargs kill 2>/dev/null ### OpenVPN TCP RSA
 lsof -t -i tcp:8088 -s tcp:listen | xargs kill 2>/dev/null ### OpenVPN TCP EC
 Ohp2
-
 chmod +x /etc/ohpserver/stop
 
 cat <<'EOFohp' > /lib/systemd/system/ohpserver.service
@@ -521,13 +521,11 @@ cat <<'EOFohp' > /lib/systemd/system/ohpserver.service
 Description=OpenHTTP Puncher Server
 Wants=network.target
 After=network.target
-
 [Service]
 ExecStart=/bin/bash /etc/ohpserver/run 2>/dev/null
 ExecStop=/bin/bash /etc/ohpserver/stop 2>/dev/null
 Restart=always
 RestartSec=3
-
 [Install]
 WantedBy=multi-user.target
 EOFohp
@@ -555,7 +553,6 @@ lsof -t -i tcp:10000 -s tcp:listen | xargs kill 2>/dev/null
 systemctl restart webmin &> /dev/null
 systemctl enable webmin &> /dev/null
 webminEOF
-
 screen -S webmininstall -dm bash -c "bash /tmp/install-webmin.bash && rm -f /tmp/install-webmin.bash"
 }
 
@@ -606,7 +603,6 @@ push "dhcp-option DNS 1.1.1.1"
 push "dhcp-option DNS 8.8.4.4"
 push "dhcp-option DNS 8.8.8.8"
 EOFovpn1
-
 cat <<'EOFovpn2' > /etc/openvpn/server/server_udp.conf
 port 25222
 dev tun
@@ -644,7 +640,6 @@ push "dhcp-option DNS 1.1.1.1"
 push "dhcp-option DNS 8.8.4.4"
 push "dhcp-option DNS 8.8.8.8"
 EOFovpn2
-
 cat <<'EOFovpn3' > /etc/openvpn/server/ec_server_tcp.conf
 port 25980
 proto tcp
@@ -686,7 +681,6 @@ push "dhcp-option DNS 1.1.1.1"
 push "dhcp-option DNS 8.8.4.4"
 push "dhcp-option DNS 8.8.8.8"
 EOFovpn3
-
 cat <<'EOFovpn4' > /etc/openvpn/server/ec_server_udp.conf
 port 25985
 proto udp
@@ -783,7 +777,7 @@ cat <<'NUovpn' > /etc/openvpn/server/server.conf
  # executed/raised from this script (OpenVPN_TCP_Port/OpenVPN_UDP_Port)
  #
  # Enjoy the new update
- # Script Updated by: Dexter Eskalarte
+ # Script Updated by Bonveio
 NUovpn
 
 wget -qO /etc/openvpn/b.zip 'https://raw.githubusercontent.com/EskalarteDexter/Autoscript/main/DebianNew/openvpn_plugin64'
@@ -858,12 +852,10 @@ echo "[Unit]
 Description=Bonveio Startup Script
 Before=network-online.target
 Wants=network-online.target
-
 [Service]
 Type=oneshot
 ExecStart=/bin/bash /etc/bonveio/startup.sh
 RemainAfterExit=yes
-
 [Install]
 WantedBy=multi-user.target" > /etc/systemd/system/bonveio.service
 chmod +x /etc/systemd/system/bonveio.service
@@ -890,7 +882,8 @@ server {
  server_name localhost;
  root /var/www/openvpn;
  index index.html;
- EOFnginx
+}
+EOFnginx
 
 rm -rf /etc/nginx/sites-*
 rm -rf /usr/share/nginx/html
@@ -902,19 +895,12 @@ echo -e "[\e[32mInfo\e[0m] Creating OpenVPN client configs.."
 cat <<'mySiteOvpn' > /var/www/openvpn/index.html
 <!DOCTYPE html>
 <html lang="en">
-
 <!-- Simple OVPN Download site by Bonveio Abitona -->
-
 <head><meta charset="utf-8" /><title>MyScriptName OVPN Config Download</title><meta name="description" content="MyScriptName Server" /><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport" /><meta name="theme-color" content="#000000" /><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css"><link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet"><link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.8.3/css/mdb.min.css" rel="stylesheet"></head><body><div class="container justify-content-center" style="margin-top:9em;margin-bottom:5em;"><div class="col-md"><div class="view"><img src="https://openvpn.net/wp-content/uploads/openvpn.jpg" class="card-img-top"><div class="mask rgba-white-slight"></div></div><div class="card"><div class="card-body"><h5 class="card-title">Config List</h5><br /><ul class="list-group">
-
 <li class="list-group-item justify-content-between align-items-center" style="margin-bottom:1em;"><p>For Globe/TM <span class="badge light-blue darken-4">Android/iOS/PC/Modem</span><br /><small> For EZ/GS Promo with WNP,SNS,FB and IG freebies</small></p><a class="btn btn-outline-success waves-effect btn-sm" href="http://IP-ADDRESS:NGINXPORT/GTMConfig.ovpn" style="float:right;"><i class="fa fa-download"></i> Download</a></li>
-
 <li class="list-group-item justify-content-between align-items-center" style="margin-bottom:1em;"><p>For Smart <span class="badge light-blue darken-4">Android/iOS/PC/Modem</span><br /><small> For GIGASTORIES Promos</small></p><a class="btn btn-outline-success waves-effect btn-sm" href="http://IP-ADDRESS:NGINXPORT/SmartGStories.ovpn" style="float:right;"><i class="fa fa-download"></i> Download</a></li>
-
 <li class="list-group-item justify-content-between align-items-center" style="margin-bottom:1em;"><p>For Smart/TnT/TM <span class="badge light-blue darken-4">Android/iOS/PC/Modem</span><br /><small> For GIGAGAMES/ML Promos</small></p><a class="btn btn-outline-success waves-effect btn-sm" href="http://IP-ADDRESS:NGINXPORT/SmartGGames.ovpn" style="float:right;"><i class="fa fa-download"></i> Download</a></li>
-
 <li class="list-group-item justify-content-between align-items-center" style="margin-bottom:1em;"><p>OHPServer + TCP OVPN <span class="badge light-blue darken-4">Experimental</span><br /><small> Good for Payload Experiments and Bughost hunting(BETA)</small></p><a class="btn btn-outline-success waves-effect btn-sm" href="http://IP-ADDRESS:NGINXPORT/OHPTCPConfig.ovpn" style="float:right;"><i class="fa fa-download"></i> Download</a></li><li class="list-group-item justify-content-between align-items-center" style="margin-bottom:1em;"><p> Sample UDP OVPN <span class="badge light-blue darken-4">Experimental</span><br /><small> More faster than TCP. Low latency, fast upload/download speed.</small></p><a class="btn btn-outline-success waves-effect btn-sm" href="http://IP-ADDRESS:NGINXPORT/UDPConfig.ovpn" style="float:right;"><i class="fa fa-download"></i> Download</a></li>
-
 </ul></div></div></div></div></body></html>
 mySiteOvpn
 
@@ -962,7 +948,6 @@ cat <<"EOFsmart" > /var/www/openvpn/SmartGStories.ovpn
 #
 # Convert your IP address into hostname (class A record) combined with Twitter's URL to make this config work
 # example: api.twitter.com.mydns.domain.com
-
 client
 dev tun
 persist-tun
@@ -1000,7 +985,6 @@ cat <<"EOFsmart2" > /var/www/openvpn/SmartGGames.ovpn
 #
 # Convert your IP address into hostname (class A record) combined with Mobilelegends's URL to make this config work
 # example: wscdn.ml.youngjoygame.com.mydns.domain.com
-
 client
 dev tun
 persist-tun
@@ -1039,12 +1023,10 @@ cat <<"EOFohp1" > /var/www/openvpn/OHPTCPConfig.ovpn
 # Experimental Config only
 # Examples demonstrated below on how to Play with OHPServer
 #
-
 client
 dev tun
 persist-tun
 proto tcp
-
 # We can play this one, put any host on the line
 # remote anyhost.com anyport
 # remote www.google.com.ph 443
@@ -1055,17 +1037,14 @@ proto tcp
 remote "https://www.phcorner.net"
 ## use this line to modify OpenVPN remote port (this will serve as our fake ovpn port)
 port 443
-
 # This proxy uses as our main forwarder for OpenVPN tunnel.
 http-proxy IP-ADDRESS 8087
-
 # We can also play our request headers here, everything are accepted, put them inside of a double-quotes.
 http-proxy-option VERSION 1.1
 http-proxy-option CUSTOM-HEADER ""
 http-proxy-option CUSTOM-HEADER "Host: www.phcorner.net%2F"
 http-proxy-option CUSTOM-HEADER "X-Forwarded-Host: www.digicert.net%2F"
 http-proxy-option CUSTOM-HEADER ""
-
 persist-remote-ip
 resolv-retry infinite
 connect-retry 0 1
@@ -1120,7 +1099,6 @@ cat <<"EOFgtmec" > /var/www/openvpn/GTMConfig_EC.ovpn
 # Server Location: OPENVPN_SERVER_LOCATION
 # Server ISP: OPENVPN_SERVER_ISP
 # 
-
 client
 dev tun
 persist-tun
@@ -1161,7 +1139,6 @@ cat <<"EOFsmartec" > /var/www/openvpn/SmartGStories_EC.ovpn
 #
 # Convert your IP address into hostname (class A record) combined with Twitter's URL to make this config work
 # example: api.twitter.com.mydns.domain.com
-
 client
 dev tun
 persist-tun
@@ -1202,7 +1179,6 @@ cat <<"EOFsmart2ec" > /var/www/openvpn/SmartGGames_EC.ovpn
 #
 # Convert your IP address into hostname (class A record) combined with Mobilelegends's URL to make this config work
 # example: wscdn.ml.youngjoygame.com.mydns.domain.com
-
 client
 dev tun
 persist-tun
@@ -1244,12 +1220,10 @@ cat <<"EOFohp2" > /var/www/openvpn/OHPTCPConfig_EC.ovpn
 # Experimental Config only
 # Examples demonstrated below on how to Play with OHPServer
 #
-
 client
 dev tun
 persist-tun
 proto tcp
-
 # We can play this one, put any host on the line
 # remote anyhost.com anyport
 # remote www.google.com.ph 443
@@ -1260,17 +1234,14 @@ proto tcp
 remote "https://www.phcorner.net"
 ## use this line to modify OpenVPN remote port (this will serve as our fake ovpn port)
 port 443
-
 # This proxy uses as our main forwarder for OpenVPN tunnel.
 http-proxy IP-ADDRESS 8088
-
 # We can also play our request headers here, everything are accepted, put them inside of a double-quotes.
 http-proxy-option VERSION 1.1
 http-proxy-option CUSTOM-HEADER ""
 http-proxy-option CUSTOM-HEADER "Host: www.phcorner.net%2F"
 http-proxy-option CUSTOM-HEADER "X-Forwarded-Host: www.digicert.net%2F"
 http-proxy-option CUSTOM-HEADER ""
-
 persist-remote-ip
 resolv-retry infinite
 connect-retry 0 1
