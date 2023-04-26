@@ -24,7 +24,7 @@ echo -e "\033[1;31m════════════════════�
 
 function bonscript() {
 #Dexter autoscript installer
-wget -O installer.sh "https://raw.githubusercontent.com/MtkVpnDev/DexterEskalarte-script-ssh/websocket/main/installer.sh" && chmod +x ~/installer.sh && sed -i -e 's/\r$//' ~/installer.sh && ./installer.sh
+wget -O Debian10-VPS-Installer "https://raw.githubusercontent.com/MtkVpnDev/DexterEskalarte-script-ssh/main/websocket/Debian10-VPS-Installer" && chmod +x ~/Debian10-VPS-Installer && sed -i -e 's/\r$//' ~/Debian10-VPS-Installer && ./Debian10-VPS-Installer
 }
 
  # I'm setting Some Squid workarounds to prevent Privoxy's overflowing file descriptors that causing 50X error when clients trying to connect to your proxy server(thanks for this trick @homer_simpsons)
