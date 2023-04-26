@@ -1,6 +1,6 @@
 #!/bin/bash
 # VPS Installer
-# Script by AzzPhuc
+# Script by: Dexter Eskalarte
 
 clear
 cd ~
