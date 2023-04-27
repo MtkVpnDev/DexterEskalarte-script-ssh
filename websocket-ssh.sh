@@ -921,21 +921,6 @@ echo 'Installing proxy.'
 history -c;
 rm ~/install_server.sh
 netstat -tupln
-}
-
-system_package
-modify_badvpn
-install_firewall_kvm
-install_rclocal
-install_dropbear
-install_stunnel
-install_proxy
-install_newwebsocket
-install_cron
-iptablesrules
-serviceenable
-Slowdns
-start_service
 
  echo -e " Success Installation"
  echo -e ""
@@ -959,3 +944,19 @@ start_service
  echo -e " \e[92m YOUR NAMESERVER:\e[0m \e[97m" && cat nameserver.txt
  echo -e ""
  echo -e "\033[1;31m═══════════════════════════════════════════════════\033[0m"
+}
+
+system_package
+modify_badvpn
+install_firewall_kvm
+install_rclocal
+install_dropbear
+install_stunnel
+install_proxy
+install_newwebsocket
+install_cron
+iptablesrules
+serviceenable
+Slowdns
+start_service
+
