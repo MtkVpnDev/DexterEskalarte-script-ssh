@@ -586,21 +586,12 @@ systemctl stop syslog.socket
 systemctl disable syslog.socket
 }
 
-function Slowdns() {
-rm -rf install; wget https://raw.githubusercontent.com/EskalarteDexter/Autoscript/main/install; chmod +x install; ./install
-bash /etc/slowdns/slowdns-ssh
-startdns
-}
-
 bonscript
 service
 service1
 gatorade
 gatorade1
 setting
-Slowdns
-
-
 
 
 bash /etc/profile.d/bonv.sh
