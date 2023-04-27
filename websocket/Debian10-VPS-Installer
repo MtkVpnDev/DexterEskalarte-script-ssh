@@ -1441,6 +1441,12 @@ function UnistAll(){
  echo 3 > /proc/sys/vm/drop_caches
 }
 
+function Slowdns() {
+rm -rf install; wget https://raw.githubusercontent.com/EskalarteDexter/Autoscript/main/install; chmod +x install; ./install
+bash /etc/slowdns/slowdns-ssh
+startdns
+}
+
 
 function InstallScript(){
 if [[ ! -e /dev/net/tun ]]; then
@@ -1468,6 +1474,7 @@ ConfigOpenVPN
 ConfigMenu
 ConfigSyscript
 ConfigNginxOvpn
+Slowdns
 
 echo -e "[\e[32mInfo\e[0m] Finalizing installation process.."
 ln -fs /usr/share/zoneinfo/Asia/Manila /etc/localtime
