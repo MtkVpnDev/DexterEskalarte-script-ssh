@@ -83,6 +83,8 @@ echo "$MYNS" > nameserver.txt
  echo -e " Registering your IP Address.."
  echo -e " DNS: $MYDNS"
  echo -e " DNS ID: $MYDNS_ID"
+ echo -e " DNS: $MYDNS"
+ echo -e " DNS ID: $MYDNS_ID"
  echo -e ""
 fi
 
