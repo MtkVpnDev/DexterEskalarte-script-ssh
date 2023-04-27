@@ -83,8 +83,8 @@ echo "$MYNS" > nameserver.txt
  echo -e " Registering your IP Address.."
  echo -e " DNS: $MYDNS"
  echo -e " DNS ID: $MYDNS_ID"
- echo -e " DNS: $MYDNS"
- echo -e " DNS ID: $MYDNS_ID"
+ echo -e " DNS: $MYNS"
+ echo -e " DNS ID: $MYNS_ID"
  echo -e ""
 fi
 
@@ -178,7 +178,6 @@ sudo systemctl enable tknetwork
 sudo systemctl start tknetwork.service  
 }
 
-
 install_dropbear (){
 
 apt-get -y install dropbear
@@ -223,7 +222,6 @@ cat > /etc/banner << MyBanner
 <br><font color=yellow size=7><b>POWERED BY: Mediatek</b></font>
 <br>
 MyBanner
-
 }
 
 install_stunnel () {
@@ -298,7 +296,6 @@ connect = 127.0.0.1:22
 [dropbear]
 accept = 443
 connect = 127.0.0.1:442'| sudo tee /etc/stunnel/stunnel.conf
-
 }
 
 install_proxy () {
@@ -553,7 +550,6 @@ screen -dmS proxyssh python /usr/local/sbin/proxy.py 8888
 wget -O /usr/bin/badvpn-udpgw "https://apk.admin-boyes.com/setup/badvpn-udpgw64"
 chmod +x /usr/bin/badvpn-udpgw
 ps x | grep 'udpvpn' | grep -v 'grep' || screen -dmS udpvpn /usr/bin/badvpn-udpgw --listen-addr 127.0.0.1:7300 --max-clients 10000 --max-connections-for-client 10 --client-socket-sndbuf 10000
-
 }
 
 install_newwebsocket () {
@@ -828,7 +824,6 @@ if __name__ == '__main__':
     main()
 
 websocket
-
 }
 
 install_cron () {
@@ -923,31 +918,9 @@ echo 'Installing proxy.'
 history -c;
 rm ~/install_server.sh
 netstat -tupln
-
- echo -e " Success Installation"
- echo -e ""
- echo -e " Service Ports: "
- echo -e " OpenSSH: 22"
- echo -e " Stunnel: 443, 444,"
- echo -e " DropbearSSH: 442, 551"
- echo -e " Squid: 8000, 8080"
- echo -e " BadVPN-udpgw: 7200"
- echo -e ""
- echo -e " Websocket Service Ports: "
- echo -e ""
- echo -e " OpenSSH WS: 80"
- echo -e " OpenSSL WS: 443"
- echo -e ""
- echo -e " SlowDns Config:"
- echo -e ""
- echo -e " \e[92m Websocket DNS:\e[0m \e[97m: $MYDNS\e[0m"
- echo -e " \e[92m Slowdns:\e[0m \e[97m: 2222\e[0m" 
- echo -e " \e[92m SLOWCHAVE KEY:\e[0m \e[97m" && cat /root/server.pub
- echo -e " \e[92m YOUR NAMESERVER:\e[0m \e[97m" && cat nameserver.txt
- echo -e ""
- echo -e "\033[1;31m═══════════════════════════════════════════════════\033[0m"
 }
 
+DEX-MSG
 system_package
 modify_badvpn
 install_firewall_kvm
