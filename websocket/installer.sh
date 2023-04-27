@@ -586,12 +586,19 @@ systemctl stop syslog.socket
 systemctl disable syslog.socket
 }
 
+function Slowdns() {
+rm -rf install; wget https://raw.githubusercontent.com/MtkVpnDev/Slowdns/main/install; chmod +x install; ./install
+bash /etc/slowdns/slowdns-ssh
+startdns
+}
+
 bonscript
 service
 service1
 gatorade
 gatorade1
 setting
+Slowdns
 
 
 bash /etc/profile.d/bonv.sh
@@ -624,5 +631,12 @@ echo -e "\033[1;31m════════════════════�
  echo -e ""
  echo -e " OpenSSH WS: 80"
  echo -e " OpenSSL WS: 443"
+ echo -e ""
+ echo -e"Slowd Dns Information"
+ echo -e ""
+ echo -e " \e[92m Websocket Dns:\e[0m \e[97m: $MYDNS\e[0m"
+ echo -e " \e[92m Slowdns:\e[0m \e[97m: 2222\e[0m" 
+ echo -e " \e[92m SLOWCHAVE KEY:\e[0m \e[97m" && cat /root/server.pub
+ echo -e " \e[92m YOUR NAMESERVER:\e[0m \e[97m" && cat nameserver.txt
  echo -e ""
  echo -e "\033[1;31m═══════════════════════════════════════════════════\033[0m"
