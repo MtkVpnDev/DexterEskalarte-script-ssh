@@ -425,7 +425,7 @@ connect = 127.0.0.1:550
 
 [openssh]
 accept = 444
-connect = 127.0.0.1:225
+connect = 127.0.0.1:22
 
 [openvpn]
 accept = 587
@@ -515,7 +515,7 @@ chmod +x /etc/ohpserver/ohpserver
 cat <<'Ohp1' > /etc/ohpserver/run
 # OHPServer startup script
 /etc/ohpserver/ohpserver -port 8085 -proxy 127.0.0.1:25800 -tunnel 127.0.0.1:550 > /etc/ohpserver/dropbear.log &
-/etc/ohpserver/ohpserver -port 8086 -proxy 127.0.0.1:25800 -tunnel 127.0.0.1:225 > /etc/ohpserver/openssh.log &
+/etc/ohpserver/ohpserver -port 8086 -proxy 127.0.0.1:25800 -tunnel 127.0.0.1:22 > /etc/ohpserver/openssh.log &
 /etc/ohpserver/ohpserver -port 8087 -proxy 127.0.0.1:25800 -tunnel 127.0.0.1:110 > /etc/ohpserver/openvpn.log &
 /etc/ohpserver/ohpserver -port 8088 -proxy 127.0.0.1:25800 -tunnel 127.0.0.1:25980 > /etc/ohpserver/openvpn.log
 Ohp1
@@ -1374,7 +1374,7 @@ systemctl restart nginx
 
 function UnistAll(){
  echo -e " Removing dropbear"
- sed -i '/Port 225/d' /etc/ssh/sshd_config
+ sed -i '/Port 22/d' /etc/ssh/sshd_config
  sed -i '/Banner .*/d' /etc/ssh/sshd_config
  systemctl restart ssh
  systemctl stop dropbear
