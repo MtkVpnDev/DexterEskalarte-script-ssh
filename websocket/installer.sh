@@ -637,7 +637,6 @@ echo -e "\033[1;31m════════════════════�
  echo -e " SlowDns Config:"
  echo -e ""
  echo -e " \e[92m Websocket DNS:\e[0m \e[97m: $MYDNS\e[0m"
- echo -e " \e[92m NameServer Host:\e[0m \e[97m: $MYDNS_IDS\e[0m"
  echo -e " \e[92m Slowdns:\e[0m \e[97m: 2222\e[0m" 
  echo -e " \e[92m SLOWCHAVE KEY:\e[0m \e[97m" && cat /root/server.pub
  echo -e " \e[92m YOUR NAMESERVER:\e[0m \e[97m" && cat nameserver.txt
