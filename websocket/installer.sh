@@ -39,8 +39,8 @@ IPADDR="$(curl -4skL http://ipinfo.io/ip)"
 
 GLOBAL_API_KEY="1d0e138b7b9c1368f6cc1b5f8fef94e3c25a8"
 CLOUDFLARE_EMAIL="d.eskalarte@gmail.com"
-DOMAIN_NAME_TLD="api-mediatekold.online"
-DOMAIN_ZONE_ID="0c7a82da29c948deb20007b850811146"
+DOMAIN_NAME_TLD="slowdns.online"
+DOMAIN_ZONE_ID="538d4bf0150ac1dc974801ae9bb31498"
 ### DNS hostname / Payload here
 ## Setting variable
 
