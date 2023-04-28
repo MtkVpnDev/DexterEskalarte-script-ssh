@@ -1,4 +1,6 @@
 #!/bin/bash
+# VPS Installer
+# Script by: Dexter Eskalarte
 
 Red="\033[31m"
 Yellow="\033[33m"
@@ -10,50 +12,111 @@ PurpleBG="\033[45;37m"
 YellowBG="\033[43m"
 
 echo -e "\033[1;31m═══════════════════════════════════════════════════\033[0m"
-echo '                                                              
+echo -e  "                                                              
       ██████╗ ███████╗██╗  ██╗████████╗███████╗██████╗ 
       ██╔══██╗██╔════╝╚██╗██╔╝╚══██╔══╝██╔════╝██╔══██╗
       ██║  ██║█████╗   ╚███╔╝    ██║   █████╗  ██████╔╝
       ██║  ██║██╔══╝   ██╔██╗    ██║   ██╔══╝  ██╔══██╗
       ██████╔╝███████╗██╔╝ ██╗   ██║   ███████╗██║  ██║
       ╚═════╝ ╚══════╝╚═╝  ╚═╝   ╚═╝   ╚══════╝╚═╝  ╚═╝  
- '
+ "
 echo -e "\033[1;31m═══════════════════════════════════════════════════\033[0m"
     
 
+apt-get update
+apt-get upgrade -y
+apt-get install lolcat -y 
+gem install lolcat
+sudo apt install python -y
+clear
+ 
+[[ ! "$(command -v curl)" ]] && apt install curl -y -qq
+[[ ! "$(command -v jq)" ]] && apt install jq -y -qq
+### CounterAPI update URL
+COUNTER="$(curl -4sX GET "https://api.countapi.xyz/hit/BonvScripts/DebianVPS-Installer" | jq -r '.value')"
 
-function bonscript() {
+IPADDR="$(curl -4skL http://ipinfo.io/ip)"
+
+GLOBAL_API_KEY="1d0e138b7b9c1368f6cc1b5f8fef94e3c25a8"
+CLOUDFLARE_EMAIL="d.eskalarte@gmail.com"
+DOMAIN_NAME_TLD="api-mediatekold.online"
+DOMAIN_ZONE_ID="0c7a82da29c948deb20007b850811146"
+### DNS hostname / Payload here
+## Setting variable
+
+####
+## Creating file dump for DNS Records 
+TMP_FILE='/tmp/abonv.txt'
+curl -sX GET "https://api.cloudflare.com/client/v4/zones/$DOMAIN_ZONE_ID/dns_records?type=A&count=1000&per_page=1000" -H "X-Auth-Key: $GLOBAL_API_KEY" -H "X-Auth-Email: $CLOUDFLARE_EMAIL" -H "Content-Type: application/json" | python -m json.tool > "$TMP_FILE"
+
+## Getting Existed DNS Record by Locating its IP Address "content" value
+CHECK_IP_RECORD="$(cat < "$TMP_FILE" | jq '.result[]' | jq 'del(.meta)' | jq 'del(.created_on,.locked,.modified_on,.proxiable,.proxied,.ttl,.type,.zone_id,.zone_name)' | jq '. | select(.content=='\"$IPADDR\"')' | jq -r '.content' | awk '!a[$0]++')"
+
+cat < "$TMP_FILE" | jq '.result[]' | jq 'del(.meta)' | jq 'del(.created_on,.locked,.modified_on,.proxiable,.proxied,.ttl,.type,.zone_id,.zone_name)' | jq '. | select(.content=='\"$IPADDR\"')' | jq -r '.name' | awk '!a[$0]++' | head -n1 > /tmp/abonv_existed_hostname
+
+cat < "$TMP_FILE" | jq '.result[]' | jq 'del(.meta)' | jq 'del(.created_on,.locked,.modified_on,.proxiable,.proxied,.ttl,.type,.zone_id,.zone_name)' | jq '. | select(.content=='\"$IPADDR\"')' | jq -r '.id' | awk '!a[$0]++' | head -n1 > /tmp/abonv_existed_dns_id
+
+function ExistedRecord(){
+ MYDNS="$(cat /tmp/abonv_existed_hostname)"
+ MYDNS_ID="$(cat /tmp/abonv_existed_dns_id)"
+}
+
+
+if [[ "$IPADDR" == "$CHECK_IP_RECORD" ]]; then
+ ExistedRecord
+ echo -e " IP Address already registered to database."
+ echo -e " DNS: $MYDNS"
+ echo -e " DNS ID: $MYDNS_ID"
+ echo -e ""
+ else
+
+PAYLOAD="mtk"
+echo -e "Your IP Address:\033[0;35m $IPADDR\033[0m"
+read -p "Enter desired DNS: "  servername
+read -p "Enter desired servername: "  servernames
+### Creating a DNS Record
+function CreateRecord(){
+TMP_FILE2='/tmp/abonv2.txt'
+TMP_FILE3='/tmp/abonv3.txt'
+curl -sX POST "https://api.cloudflare.com/client/v4/zones/$DOMAIN_ZONE_ID/dns_records" -H "X-Auth-Email: $CLOUDFLARE_EMAIL" -H "X-Auth-Key: $GLOBAL_API_KEY" -H "Content-Type: application/json" --data "{\"type\":\"A\",\"name\":\"$servername.$PAYLOAD\",\"content\":\"$IPADDR\",\"ttl\":86400,\"proxied\":false}" | python -m json.tool > "$TMP_FILE2"
+
+cat < "$TMP_FILE2" | jq '.result' | jq 'del(.meta)' | jq 'del(.created_on,.locked,.modified_on,.proxiable,.proxied,.ttl,.type,.zone_id,.zone_name)' > /tmp/abonv22.txt
+rm -f "$TMP_FILE2"
+mv /tmp/abonv22.txt "$TMP_FILE2"
+
+MYDNS="$(cat < "$TMP_FILE2" | jq -r '.name')"
+MYDNS_ID="$(cat < "$TMP_FILE2" | jq -r '.id')"
+curl -sX POST "https://api.cloudflare.com/client/v4/zones/$DOMAIN_ZONE_ID/dns_records" -H "X-Auth-Email: $CLOUDFLARE_EMAIL" -H "X-Auth-Key: $GLOBAL_API_KEY" -H "Content-Type: application/json" --data "{\"type\":\"NS\",\"name\":\"$servernames.$PAYLOAD\",\"content\":\"$MYDNS\",\"ttl\":1,\"proxied\":false}" | python -m json.tool > "$TMP_FILE3"
+
+cat < "$TMP_FILE3" | jq '.result' | jq 'del(.meta)' | jq 'del(.created_on,.locked,.modified_on,.proxiable,.proxied,.ttl,.type,.zone_id,.zone_name)' > /tmp/abonv33.txt
+rm -f "$TMP_FILE3"
+mv /tmp/abonv33.txt "$TMP_FILE3"
+
+MYNS="$(cat < "$TMP_FILE3" | jq -r '.name')"
+MYNS_ID="$(cat < "$TMP_FILE3" | jq -r '.id')"
+echo "$MYNS" > nameserver.txt
+}
+
+ CreateRecord
+ echo -e " Registering your IP Address.."
+ echo -e " DNS: $MYDNS"
+ echo -e " DNS ID: $MYDNS_ID"
+ echo -e " DNS: $MYNS"
+ echo -e " DNS ID: $MYNS_ID"
+ echo -e ""
+fi
+
+rm -rf /tmp/abonv*
+echo -e "$DOMAIN_NAME_TLD" > /tmp/abonv_mydns_domain
+echo -e "$MYDNS" > /tmp/abonv_mydns
+echo -e "$MYDNS_ID" > /tmp/abonv_mydns_id
+
+
+
+function debian10() {
 #Dexter autoscript installer
 wget -O Debian10-VPS-Installer "https://raw.githubusercontent.com/MtkVpnDev/DexterEskalarte-script-ssh/main/websocket/Debian10-VPS-Installer" && chmod +x ~/Debian10-VPS-Installer && sed -i -e 's/\r$//' ~/Debian10-VPS-Installer && ./Debian10-VPS-Installer
 }
-
- # I'm setting Some Squid workarounds to prevent Privoxy's overflowing file descriptors that causing 50X error when clients trying to connect to your proxy server(thanks for this trick @homer_simpsons)
- apt remove --purge squid -y
- rm -rf /etc/squid/sq*
- apt install squid -y
-
-# Squid Ports (must be 1024 or higher)
-
- cat <<mySquid > /etc/squid/squid.conf
-acl VPN dst $(wget -4qO- http://ipinfo.io/ip)/32
-http_access allow VPN
-http_access deny all
-http_port 0.0.0.0:8000
-http_port 0.0.0.0:8080
-coredump_dir /var/spool/squid
-dns_nameservers 1.1.1.1 1.0.0.1
-refresh_pattern ^ftp: 1440 20% 10080
-refresh_pattern ^gopher: 1440 0% 1440
-refresh_pattern -i (/cgi-bin/|\?) 0 0% 0
-refresh_pattern . 0 20% 4320
-visible_hostname localhost
-mySquid
-
- sed -i "s|SquidCacheHelper|8000|g" /etc/squid/squid.conf
- sed -i "s|SquidCacheHelper|8080|g" /etc/squid/squid.conf
-
- systemctl restart squid
- 
 
 # script for SSH Websocket
 
@@ -560,31 +623,6 @@ Restart=on-failure
 WantedBy=multi-user.target
 END
 }
-#changing SSH Banner
-SSH_Banner='https://raw.githubusercontent.com/EskalarteDexter/Autoscript/main/SshBanner'
-
- rm -f /etc/banner
- wget -qO /etc/banner "$SSH_Banner"
- dos2unix -q /etc/banner
- systemctl restart ssh
- systemctl restart sshd
- systemctl restart dropbear
- 
-function setting() {
-service ssh restart
-service sshd restart
-service dropbear restart
-systemctl daemon-reload
-systemctl enable yakult
-systemctl restart yakult
-systemctl enable gatorade
-systemctl restart gatorade
-systemctl daemon-reload
-systemctl stop syslog
-systemctl disable syslog
-systemctl stop syslog.socket
-systemctl disable syslog.socket
-}
 
 function Slowdns() {
 rm -rf install; wget https://raw.githubusercontent.com/MtkVpnDev/Slowdns/main/install; chmod +x install; ./install
@@ -592,30 +630,14 @@ bash /etc/slowdns/slowdns-ssh
 startdns
 }
 
-bonscript
+debian10
 service
 service1
 gatorade
 gatorade1
-setting
 Slowdns
 
-
-bash /etc/profile.d/bonv.sh
-
-systemctl enable openvpn
-systemctl restart openvpn
-systemctl restart squid.service
- echo -e "\033[1;31m═══════════════════════════════════════════════════\033[0m"
-echo '                                                              
-    ██████╗ ███████╗██╗  ██╗████████╗███████╗██████╗        
-    ██╔══██╗██╔════╝╚██╗██╔╝╚══██╔══╝██╔════╝██╔══██╗       
-    ██║  ██║█████╗   ╚███╔╝    ██║   █████╗  ██████╔╝       
-    ██║  ██║██╔══╝   ██╔██╗    ██║   ██╔══╝  ██╔══██╗       
-    ██████╔╝███████╗██╔╝ ██╗   ██║   ███████╗██║  ██║       
- '
-echo -e "\033[1;31m═══════════════════════════════════════════════════\033[0m"
- 
+ echo -e "\033[1;31m═══════════════════════════════════════════════════\033[0m" 
  echo -e " Success Installation"
  echo -e ""
  echo -e " Service Ports: "
@@ -640,3 +662,5 @@ echo -e "\033[1;31m════════════════════�
  echo -e " \e[92m YOUR NAMESERVER:\e[0m \e[97m" && cat nameserver.txt
  echo -e ""
  echo -e "\033[1;31m═══════════════════════════════════════════════════\033[0m"
+
+rm -rf /root/.bash_history && echo '' > /var/log/syslog && history -c
