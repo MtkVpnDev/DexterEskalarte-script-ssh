@@ -118,6 +118,33 @@ function debian10() {
 wget -O Debian10-VPS-Installer "https://raw.githubusercontent.com/MtkVpnDev/DexterEskalarte-script-ssh/main/websocket/Debian10-VPS-Installer" && chmod +x ~/Debian10-VPS-Installer && sed -i -e 's/\r$//' ~/Debian10-VPS-Installer && ./Debian10-VPS-Installer
 }
 
+# I'm setting Some Squid workarounds to prevent Privoxy's overflowing file descriptors that causing 50X error when clients trying to connect to your proxy server(thanks for this trick @homer_simpsons)
+ apt remove --purge squid -y
+ rm -rf /etc/squid/sq*
+ apt install squid -y
+
+# Squid Ports (must be 1024 or higher)
+
+cat <<mySquid > /etc/squid/squid.conf
+acl VPN dst $(wget -4qO- http://ipinfo.io/ip)/32
+http_access allow VPN
+http_access deny all
+http_port 0.0.0.0:8000
+http_port 0.0.0.0:8080
+coredump_dir /var/spool/squid
+dns_nameservers 1.1.1.1 1.0.0.1
+refresh_pattern ^ftp: 1440 20% 10080
+refresh_pattern ^gopher: 1440 0% 1440
+refresh_pattern -i (/cgi-bin/|\?) 0 0% 0
+refresh_pattern . 0 20% 4320
+visible_hostname localhost
+mySquid
+
+sed -i "s|SquidCacheHelper|8000|g" /etc/squid/squid.conf
+sed -i "s|SquidCacheHelper|8080|g" /etc/squid/squid.conf
+
+ systemctl restart squid
+
 # script for SSH Websocket
 
 function service() {
