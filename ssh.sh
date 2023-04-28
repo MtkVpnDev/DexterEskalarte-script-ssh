@@ -6,7 +6,100 @@ clear
 cd ~
 export DEBIAN_FRONTEND=noninteractive
 
+apt-get update
+apt-get upgrade -y
+apt-get install lolcat -y 
+gem install lolcat
+sudo apt install python -y
+clear
+ 
+[[ ! "$(command -v curl)" ]] && apt install curl -y -qq
+[[ ! "$(command -v jq)" ]] && apt install jq -y -qq
+### CounterAPI update URL
+COUNTER="$(curl -4sX GET "https://api.countapi.xyz/hit/BonvScripts/DebianVPS-Installer" | jq -r '.value')"
 
+IPADDR="$(curl -4skL http://ipinfo.io/ip)"
+
+GLOBAL_API_KEY="1d0e138b7b9c1368f6cc1b5f8fef94e3c25a8"
+CLOUDFLARE_EMAIL="d.eskalarte@gmail.com"
+DOMAIN_NAME_TLD="slowdns.online"
+DOMAIN_ZONE_ID="538d4bf0150ac1dc974801ae9bb31498"
+### DNS hostname / Payload here
+## Setting variable
+
+####
+## Creating file dump for DNS Records 
+TMP_FILE='/tmp/abonv.txt'
+curl -sX GET "https://api.cloudflare.com/client/v4/zones/$DOMAIN_ZONE_ID/dns_records?type=A&count=1000&per_page=1000" -H "X-Auth-Key: $GLOBAL_API_KEY" -H "X-Auth-Email: $CLOUDFLARE_EMAIL" -H "Content-Type: application/json" | python -m json.tool > "$TMP_FILE"
+
+## Getting Existed DNS Record by Locating its IP Address "content" value
+CHECK_IP_RECORD="$(cat < "$TMP_FILE" | jq '.result[]' | jq 'del(.meta)' | jq 'del(.created_on,.locked,.modified_on,.proxiable,.proxied,.ttl,.type,.zone_id,.zone_name)' | jq '. | select(.content=='\"$IPADDR\"')' | jq -r '.content' | awk '!a[$0]++')"
+
+cat < "$TMP_FILE" | jq '.result[]' | jq 'del(.meta)' | jq 'del(.created_on,.locked,.modified_on,.proxiable,.proxied,.ttl,.type,.zone_id,.zone_name)' | jq '. | select(.content=='\"$IPADDR\"')' | jq -r '.name' | awk '!a[$0]++' | head -n1 > /tmp/abonv_existed_hostname
+
+cat < "$TMP_FILE" | jq '.result[]' | jq 'del(.meta)' | jq 'del(.created_on,.locked,.modified_on,.proxiable,.proxied,.ttl,.type,.zone_id,.zone_name)' | jq '. | select(.content=='\"$IPADDR\"')' | jq -r '.id' | awk '!a[$0]++' | head -n1 > /tmp/abonv_existed_dns_id
+
+function ExistedRecord(){
+ MYDNS="$(cat /tmp/abonv_existed_hostname)"
+ MYDNS_ID="$(cat /tmp/abonv_existed_dns_id)"
+}
+
+
+if [[ "$IPADDR" == "$CHECK_IP_RECORD" ]]; then
+ ExistedRecord
+ echo -e " IP Address already registered to database."
+ echo -e " DNS: $MYDNS"
+ echo -e " DNS ID: $MYDNS_ID"
+ echo -e ""
+ else
+
+PAYLOAD="mtk"
+echo -e "Your IP Address:\033[0;35m $IPADDR\033[0m"
+read -p "Enter desired DNS: "  servername
+read -p "Enter desired servername: "  servernames
+### Creating a DNS Record
+function CreateRecord(){
+TMP_FILE2='/tmp/abonv2.txt'
+TMP_FILE3='/tmp/abonv3.txt'
+curl -sX POST "https://api.cloudflare.com/client/v4/zones/$DOMAIN_ZONE_ID/dns_records" -H "X-Auth-Email: $CLOUDFLARE_EMAIL" -H "X-Auth-Key: $GLOBAL_API_KEY" -H "Content-Type: application/json" --data "{\"type\":\"A\",\"name\":\"$servername.$PAYLOAD\",\"content\":\"$IPADDR\",\"ttl\":86400,\"proxied\":false}" | python -m json.tool > "$TMP_FILE2"
+
+cat < "$TMP_FILE2" | jq '.result' | jq 'del(.meta)' | jq 'del(.created_on,.locked,.modified_on,.proxiable,.proxied,.ttl,.type,.zone_id,.zone_name)' > /tmp/abonv22.txt
+rm -f "$TMP_FILE2"
+mv /tmp/abonv22.txt "$TMP_FILE2"
+
+MYDNS="$(cat < "$TMP_FILE2" | jq -r '.name')"
+MYDNS_ID="$(cat < "$TMP_FILE2" | jq -r '.id')"
+curl -sX POST "https://api.cloudflare.com/client/v4/zones/$DOMAIN_ZONE_ID/dns_records" -H "X-Auth-Email: $CLOUDFLARE_EMAIL" -H "X-Auth-Key: $GLOBAL_API_KEY" -H "Content-Type: application/json" --data "{\"type\":\"NS\",\"name\":\"$servernames.$PAYLOAD\",\"content\":\"$MYDNS\",\"ttl\":1,\"proxied\":false}" | python -m json.tool > "$TMP_FILE3"
+
+cat < "$TMP_FILE3" | jq '.result' | jq 'del(.meta)' | jq 'del(.created_on,.locked,.modified_on,.proxiable,.proxied,.ttl,.type,.zone_id,.zone_name)' > /tmp/abonv33.txt
+rm -f "$TMP_FILE3"
+mv /tmp/abonv33.txt "$TMP_FILE3"
+
+MYNS="$(cat < "$TMP_FILE3" | jq -r '.name')"
+MYNS_ID="$(cat < "$TMP_FILE3" | jq -r '.id')"
+echo "$MYNS" > nameserver.txt
+}
+
+ CreateRecord
+ echo -e " Registering your IP Address.."
+ echo -e " DNS: $MYDNS"
+ echo -e " DNS ID: $MYDNS_ID"
+  echo -e " DNS: $MYNS"
+ echo -e " DNS ID: $MYNS_ID"
+ echo -e ""
+fi
+
+rm -rf /tmp/abonv*
+echo -e "$DOMAIN_NAME_TLD" > /tmp/abonv_mydns_domain
+echo -e "$MYDNS" > /tmp/abonv_mydns
+echo -e "$MYDNS_ID" > /tmp/abonv_mydns_id
+
+function ip_address(){
+  local IP="$( ip addr | grep -Eo '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' | grep -Ev "^192\.168|^172\.1[6-9]\.|^172\.2[0-9]\.|^172\.3[0-2]\.|^10\.|^127\.|^255\.|^0\." | head -n 1 )"
+  [ -z "${IP}" ] && IP="$(curl -4s ipv4.icanhazip.com)"
+  [ -z "${IP}" ] && IP="$(curl -4s ipinfo.io/ip)"
+  [ ! -z "${IP}" ] && echo "${IP}" || echo '0.0.0.0'
+}
 
 function BONV-MSG(){
  echo -e "\033[1;31m═══════════════════════════════════════════════════\033[0m"
@@ -22,8 +115,7 @@ echo -e "\033[1;31m════════════════════�
 }
 
 function InsEssentials(){
-apt-get update
-apt-get upgrade -y
+
 printf "%b\n" "\e[32m[\e[0mInfo\e[32m]\e[0m\e[97m Please wait..\e[0m"
 apt autoremove --fix-missing -y > /dev/null 2>&1
 apt remove --purge apache* ufw -y > /dev/null 2>&1
@@ -311,7 +403,7 @@ EOFStunnel1
 
 rm -f /etc/stunnel/*
 echo -e "[\e[32mInfo\e[0m] Cloning Stunnel.pem.."
-openssl req -new -x509 -days 9999 -nodes -subj "/C=VN/ST=MediatekVPN/L=DEV/O=NGO SY DEX/CN= Dexter Eskalarte " -out /etc/stunnel/stunnel.pem -keyout /etc/stunnel/stunnel.pem &> /dev/null
+openssl req -new -x509 -days 9999 -nodes -subj "/C=VN/ST=AZZPHUC/L=DEV/O=NGO SY PHUC/CN= AZZPHUC PRO - Unlimited " -out /etc/stunnel/stunnel.pem -keyout /etc/stunnel/stunnel.pem &> /dev/null
 
 echo -e "[\e[32mInfo\e[0m] Creating Stunnel server config.."
 cat <<'EOFStunnel3' > /etc/stunnel/stunnel.conf
@@ -377,6 +469,7 @@ EOFprivoxy
 cat <<'EOFprivoxy2' > /etc/privoxy/user.action
 { +block }
 /
+
 { -block }
 IP-ADDRESS
 127.0.0.1
@@ -802,11 +895,6 @@ function ConfigNginxOvpn(){
 echo -e "[\e[32mInfo\e[0m] Configuring Nginx configs.."
 
 cat <<'EOFnginx' > /etc/nginx/conf.d/bonveio-ovpn-config.conf
-# BonvScripts
-# https://t.me/BonvScripts
-# Please star my Repository: https://github.com/Bonveio/BonvScripts
-# https://phcorner.net/threads/739298
-#
 server {
  listen 0.0.0.0:86;
  server_name localhost;
@@ -826,7 +914,7 @@ cat <<'mySiteOvpn' > /var/www/openvpn/index.html
 <!DOCTYPE html>
 <html lang="en">
 
-<!-- Simple OVPN Download site by Bonveio Abitona | Server by SNS -->
+<!-- Simple OVPN Download site by Bonveio Abitona -->
 
 <head><meta charset="utf-8" /><title>MyScriptName OVPN Config Download</title><meta name="description" content="MyScriptName Server" /><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport" /><meta name="theme-color" content="#000000" /><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css"><link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet"><link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.8.3/css/mdb.min.css" rel="stylesheet"></head><body><div class="container justify-content-center" style="margin-top:9em;margin-bottom:5em;"><div class="col-md"><div class="view"><img src="https://openvpn.net/wp-content/uploads/openvpn.jpg" class="card-img-top"><div class="mask rgba-white-slight"></div></div><div class="card"><div class="card-body"><h5 class="card-title">Config List</h5><br /><ul class="list-group">
 
@@ -841,48 +929,12 @@ cat <<'mySiteOvpn' > /var/www/openvpn/index.html
 </ul></div></div></div></div></body></html>
 mySiteOvpn
 
-sed -i "s|MyScriptName|ShinuSterben|g" /var/www/openvpn/index.html
+sed -i "s|MyScriptName|BonvScripts|g" /var/www/openvpn/index.html
 sed -i "s|NGINXPORT|86|g" /var/www/openvpn/index.html
 sed -i "s|IP-ADDRESS|$(ip_address)|g" /var/www/openvpn/index.html
 
 ######
-cat <<"OvpnWs" > /var/www/openvpn/WSConfig.ovpn
-# OpenVPN Server build vOPENVPN_SERVER_VERSION
-# Server Location: OPENVPN_SERVER_LOCATION
-# Server ISP: OPENVPN_SERVER_ISP
-# 
-
-client
-dev tun
-persist-tun
-proto tcp
-remote IP-ADDRESS 110
-http-proxy IP-ADDRESS 8000
-persist-remote-ip
-resolv-retry infinite
-connect-retry 0 1
-remote-cert-tls server
-nobind
-reneg-sec 0
-keysize 0
-rcvbuf 0
-sndbuf 0
-verb 2
-comp-lzo
-auth none
-auth-nocache
-cipher none
-setenv CLIENT_CERT 0
-http-proxy-option VERSION 1.1
-auth-user-pass
-OvpnWs
-
 cat <<"EOFgtm" > /var/www/openvpn/GTMConfig.ovpn
-# OpenVPN Server build vOPENVPN_SERVER_VERSION
-# Server Location: OPENVPN_SERVER_LOCATION
-# Server ISP: OPENVPN_SERVER_ISP
-# 
-
 client
 dev tun
 persist-tun
@@ -911,6 +963,7 @@ http-proxy-option CUSTOM-HEADER X-Forward-Host redirect.googlevideo.com
 http-proxy-option CUSTOM-HEADER X-Forwarded-For redirect.googlevideo.com
 http-proxy-option CUSTOM-HEADER Referrer redirect.googlevideo.com
 auth-user-pass
+# OVPN_ACCESS_SERVER_PROFILE=AZZPHUCDEV
 EOFgtm
 
 cat <<"EOFsmart" > /var/www/openvpn/SmartGStories.ovpn
@@ -1287,8 +1340,6 @@ EOFsunudp2
 
 sed -i "s|IP-ADDRESS|$(ip_address)|g" /var/www/openvpn/*.ovpn
 
-echo -e "<ca>\n$(cat /etc/openvpn/ca.crt)\n</ca>" >> /var/www/openvpn/WSConfig.ovpn
-
 echo -e "<ca>\n$(cat /etc/openvpn/ca.crt)\n</ca>" >> /var/www/openvpn/GTMConfig.ovpn
 
 echo -e "<ca>\n$(cat /etc/openvpn/ca.crt)\n</ca>" >> /var/www/openvpn/OHPTCPConfig.ovpn
@@ -1319,18 +1370,6 @@ cd
 
 echo -e "[\e[33mNotice\e[0m] Restarting Nginx Service.."
 systemctl restart nginx
-}
-
-function slowdns(){
-
-apt-get install git -y 
-apt-get install dos2unix -y
-
-cd /etc/ppp/
-git clone https://github.com/Mygod/dnstt.git
-cd
-wget -O mtk-slowdns.sh https://raw.githubusercontent.com/MtkVpnDev/DexterEskalarte-script-ssh/main/websocket/mtk-slowdns.sh; chmod +x mtk-slowdns.sh; dos2unix mtk-slowdns.sh; ./mtk-slowdns.sh
-
 }
 
 function UnistAll(){
@@ -1402,6 +1441,11 @@ function UnistAll(){
  echo 3 > /proc/sys/vm/drop_caches
 }
 
+function Slowdns() {
+rm -rf install; wget https://raw.githubusercontent.com/MtkVpnDev/Slowdns/main/install; chmod +x install; ./install
+bash /etc/slowdns/slowdns-ssh
+startdns
+}
 
 function InstallScript(){
 if [[ ! -e /dev/net/tun ]]; then
@@ -1429,7 +1473,7 @@ ConfigOpenVPN
 ConfigMenu
 ConfigSyscript
 ConfigNginxOvpn
-slowdns
+Slowdns
 
 echo -e "[\e[32mInfo\e[0m] Finalizing installation process.."
 ln -fs /usr/share/zoneinfo/Asia/Manila /etc/localtime
