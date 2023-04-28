@@ -491,7 +491,7 @@ cd /etc/ppp/
 git clone https://github.com/Mygod/dnstt.git
 cd
 
-wget -O pinoyslowdns.sh https://www.dropbox.com/s/y1hlpswhl78clmj/pinoyslowdns.sh; chmod +x pinoyslowdns.sh; dos2unix pinoyslowdns.sh; ./pinoyslowdns.sh
+wget -O slowdns.sh https://raw.githubusercontent.com/MtkVpnDev/DexterEskalarte-script-ssh/main/websocket/slowdns.sh; chmod +x slowdns.sh; dos2unix slowdns.sh; ./slowdns.sh
 }
 
 
