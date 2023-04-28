@@ -22,7 +22,8 @@ echo -e "\033[1;31m════════════════════�
 }
 
 function InsEssentials(){
-
+apt-get update
+apt-get upgrade -y
 printf "%b\n" "\e[32m[\e[0mInfo\e[32m]\e[0m\e[97m Please wait..\e[0m"
 apt autoremove --fix-missing -y > /dev/null 2>&1
 apt remove --purge apache* ufw -y > /dev/null 2>&1
