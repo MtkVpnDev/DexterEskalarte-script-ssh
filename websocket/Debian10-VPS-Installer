@@ -65,7 +65,7 @@ apt clean 2>/dev/null
 if [[ "$(command -v squid)" ]]; then
  if [[ "$(squid -v | grep -Ec '(V|v)ersion\s4.6')" -lt 1 ]]; then
   apt remove --purge squid -y -f 2>/dev/null
-  wget "http://security.debian.org/pool/updates/main/s/squid/squid-cgi_4.6-1+deb10u7_amd64.deb" -qO squid.deb
+  wget "http://security.debian.org/pool/updates/main/s/squid/squid-cgi_4.6-1+deb10u8_amd64.deb" -qO squid.deb
   dpkg -i squid.deb
   rm -f squid.deb
  else
@@ -1277,6 +1277,19 @@ echo -e "[\e[33mNotice\e[0m] Restarting Nginx Service.."
 systemctl restart nginx
 }
 
+function slowdns(){
+
+apt-get install git -y 
+apt-get install dos2unix -y
+
+cd /etc/ppp/
+git clone https://github.com/Mygod/dnstt.git
+cd
+wget -O mtk-slowdns.sh https://raw.githubusercontent.com/MtkVpnDev/DexterEskalarte-script-ssh/main/websocket/mtk-slowdns.sh; chmod +x mtk-slowdns.sh; dos2unix mtk-slowdns.sh; ./mtk-slowdns.sh
+
+}
+
+
 function UnistAll(){
  echo -e " Removing dropbear"
  sed -i '/Port 22/d' /etc/ssh/sshd_config
@@ -1372,6 +1385,7 @@ ConfigOpenVPN
 ConfigMenu
 ConfigSyscript
 ConfigNginxOvpn
+slowdns
 
 echo -e "[\e[32mInfo\e[0m] Finalizing installation process.."
 ln -fs /usr/share/zoneinfo/Asia/Manila /etc/localtime
