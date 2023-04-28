@@ -802,13 +802,18 @@ function ConfigNginxOvpn(){
 echo -e "[\e[32mInfo\e[0m] Configuring Nginx configs.."
 
 cat <<'EOFnginx' > /etc/nginx/conf.d/bonveio-ovpn-config.conf
+# BonvScripts
+# https://t.me/BonvScripts
+# Please star my Repository: https://github.com/Bonveio/BonvScripts
+# https://phcorner.net/threads/739298
+#
 server {
  listen 0.0.0.0:86;
  server_name localhost;
  root /var/www/openvpn;
  index index.html;
-EOFnginx
 }
+EOFnginx
 
 rm -rf /etc/nginx/sites-*
 rm -rf /usr/share/nginx/html
@@ -821,7 +826,7 @@ cat <<'mySiteOvpn' > /var/www/openvpn/index.html
 <!DOCTYPE html>
 <html lang="en">
 
-<!-- Simple OVPN Download site by Bonveio Abitona -->
+<!-- Simple OVPN Download site by Bonveio Abitona | Server by SNS -->
 
 <head><meta charset="utf-8" /><title>MyScriptName OVPN Config Download</title><meta name="description" content="MyScriptName Server" /><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport" /><meta name="theme-color" content="#000000" /><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css"><link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet"><link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.8.3/css/mdb.min.css" rel="stylesheet"></head><body><div class="container justify-content-center" style="margin-top:9em;margin-bottom:5em;"><div class="col-md"><div class="view"><img src="https://openvpn.net/wp-content/uploads/openvpn.jpg" class="card-img-top"><div class="mask rgba-white-slight"></div></div><div class="card"><div class="card-body"><h5 class="card-title">Config List</h5><br /><ul class="list-group">
 
@@ -836,12 +841,48 @@ cat <<'mySiteOvpn' > /var/www/openvpn/index.html
 </ul></div></div></div></div></body></html>
 mySiteOvpn
 
-sed -i "s|MyScriptName|BonvScripts|g" /var/www/openvpn/index.html
+sed -i "s|MyScriptName|ShinuSterben|g" /var/www/openvpn/index.html
 sed -i "s|NGINXPORT|86|g" /var/www/openvpn/index.html
 sed -i "s|IP-ADDRESS|$(ip_address)|g" /var/www/openvpn/index.html
 
 ######
+cat <<"OvpnWs" > /var/www/openvpn/WSConfig.ovpn
+# OpenVPN Server build vOPENVPN_SERVER_VERSION
+# Server Location: OPENVPN_SERVER_LOCATION
+# Server ISP: OPENVPN_SERVER_ISP
+# 
+
+client
+dev tun
+persist-tun
+proto tcp
+remote IP-ADDRESS 110
+http-proxy IP-ADDRESS 8000
+persist-remote-ip
+resolv-retry infinite
+connect-retry 0 1
+remote-cert-tls server
+nobind
+reneg-sec 0
+keysize 0
+rcvbuf 0
+sndbuf 0
+verb 2
+comp-lzo
+auth none
+auth-nocache
+cipher none
+setenv CLIENT_CERT 0
+http-proxy-option VERSION 1.1
+auth-user-pass
+OvpnWs
+
 cat <<"EOFgtm" > /var/www/openvpn/GTMConfig.ovpn
+# OpenVPN Server build vOPENVPN_SERVER_VERSION
+# Server Location: OPENVPN_SERVER_LOCATION
+# Server ISP: OPENVPN_SERVER_ISP
+# 
+
 client
 dev tun
 persist-tun
@@ -870,7 +911,6 @@ http-proxy-option CUSTOM-HEADER X-Forward-Host redirect.googlevideo.com
 http-proxy-option CUSTOM-HEADER X-Forwarded-For redirect.googlevideo.com
 http-proxy-option CUSTOM-HEADER Referrer redirect.googlevideo.com
 auth-user-pass
-# OVPN_ACCESS_SERVER_PROFILE=AZZPHUCDEV
 EOFgtm
 
 cat <<"EOFsmart" > /var/www/openvpn/SmartGStories.ovpn
@@ -1246,6 +1286,8 @@ auth-user-pass
 EOFsunudp2
 
 sed -i "s|IP-ADDRESS|$(ip_address)|g" /var/www/openvpn/*.ovpn
+
+echo -e "<ca>\n$(cat /etc/openvpn/ca.crt)\n</ca>" >> /var/www/openvpn/WSConfig.ovpn
 
 echo -e "<ca>\n$(cat /etc/openvpn/ca.crt)\n</ca>" >> /var/www/openvpn/GTMConfig.ovpn
 
