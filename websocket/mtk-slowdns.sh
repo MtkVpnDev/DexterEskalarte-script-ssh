@@ -7,7 +7,7 @@ echo -e "\e[1;32m           SlowDNS Installer by Dexter Eskalarte              "
 echo -e "\e[1;32m-----------------------------------------------------"
 read -p "Enter your DNS: " domain
 clear
-if [[ $domain =~ "pinoytech.online" ]]; then
+if [[ $domain =~ "slowdns.online" ]]; then
 echo -----------------------------------------------------
 echo Installing Dependencies
 echo -----------------------------------------------------
@@ -60,8 +60,8 @@ useradd -p $(openssl passwd -1 12345) bulala -ou 0 -g 0
 sleep 2
 export EDITOR=nano
 sleep 2
-crontab -r -u bulala
-(crontab -l 2>/dev/null || true; echo "@reboot screen -dmS slowdns /etc/ppp/dnstt/dnstt-server/./dnstt-server -udp :53 -privkey-file /etc/ppp/server.key $domain 127.0.0.1:22") | crontab - -u bulala
+crontab -r -u kutsaratinidor
+(crontab -l 2>/dev/null || true; echo "@reboot screen -dmS slowdns /etc/ppp/dnstt/dnstt-server/./dnstt-server -udp :53 -privkey-file /etc/ppp/server.key $domain 127.0.0.1:22") | crontab - -u kutsaratinidor
 sleep 2
 /etc/init.d/cron restart
 clear
