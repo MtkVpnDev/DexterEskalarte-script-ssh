@@ -1,6 +1,4 @@
 #!/bin/bash
-# VPS Installer
-# Script by: Dexter Eskalarte
 
 Red="\033[31m"
 Yellow="\033[33m"
@@ -12,120 +10,32 @@ PurpleBG="\033[45;37m"
 YellowBG="\033[43m"
 
 echo -e "\033[1;31m═══════════════════════════════════════════════════\033[0m"
-echo -e  "                                                              
+echo '                                                              
       ██████╗ ███████╗██╗  ██╗████████╗███████╗██████╗ 
       ██╔══██╗██╔════╝╚██╗██╔╝╚══██╔══╝██╔════╝██╔══██╗
       ██║  ██║█████╗   ╚███╔╝    ██║   █████╗  ██████╔╝
       ██║  ██║██╔══╝   ██╔██╗    ██║   ██╔══╝  ██╔══██╗
       ██████╔╝███████╗██╔╝ ██╗   ██║   ███████╗██║  ██║
       ╚═════╝ ╚══════╝╚═╝  ╚═╝   ╚═╝   ╚══════╝╚═╝  ╚═╝  
- "
+ '
 echo -e "\033[1;31m═══════════════════════════════════════════════════\033[0m"
     
 
-apt-get update
-apt-get upgrade -y
-apt-get install lolcat -y 
-gem install lolcat
-sudo apt install python -y
-clear
- 
-[[ ! "$(command -v curl)" ]] && apt install curl -y -qq
-[[ ! "$(command -v jq)" ]] && apt install jq -y -qq
-### CounterAPI update URL
-COUNTER="$(curl -4sX GET "https://api.countapi.xyz/hit/BonvScripts/DebianVPS-Installer" | jq -r '.value')"
-
-IPADDR="$(curl -4skL http://ipinfo.io/ip)"
-
-GLOBAL_API_KEY="1d0e138b7b9c1368f6cc1b5f8fef94e3c25a8"
-CLOUDFLARE_EMAIL="d.eskalarte@gmail.com"
-DOMAIN_NAME_TLD="slowdns.online"
-DOMAIN_ZONE_ID="538d4bf0150ac1dc974801ae9bb31498"
-### DNS hostname / Payload here
-## Setting variable
-
-####
-## Creating file dump for DNS Records 
-TMP_FILE='/tmp/abonv.txt'
-curl -sX GET "https://api.cloudflare.com/client/v4/zones/$DOMAIN_ZONE_ID/dns_records?type=A&count=1000&per_page=1000" -H "X-Auth-Key: $GLOBAL_API_KEY" -H "X-Auth-Email: $CLOUDFLARE_EMAIL" -H "Content-Type: application/json" | python -m json.tool > "$TMP_FILE"
-
-## Getting Existed DNS Record by Locating its IP Address "content" value
-CHECK_IP_RECORD="$(cat < "$TMP_FILE" | jq '.result[]' | jq 'del(.meta)' | jq 'del(.created_on,.locked,.modified_on,.proxiable,.proxied,.ttl,.type,.zone_id,.zone_name)' | jq '. | select(.content=='\"$IPADDR\"')' | jq -r '.content' | awk '!a[$0]++')"
-
-cat < "$TMP_FILE" | jq '.result[]' | jq 'del(.meta)' | jq 'del(.created_on,.locked,.modified_on,.proxiable,.proxied,.ttl,.type,.zone_id,.zone_name)' | jq '. | select(.content=='\"$IPADDR\"')' | jq -r '.name' | awk '!a[$0]++' | head -n1 > /tmp/abonv_existed_hostname
-
-cat < "$TMP_FILE" | jq '.result[]' | jq 'del(.meta)' | jq 'del(.created_on,.locked,.modified_on,.proxiable,.proxied,.ttl,.type,.zone_id,.zone_name)' | jq '. | select(.content=='\"$IPADDR\"')' | jq -r '.id' | awk '!a[$0]++' | head -n1 > /tmp/abonv_existed_dns_id
-
-function ExistedRecord(){
- MYDNS="$(cat /tmp/abonv_existed_hostname)"
- MYDNS_ID="$(cat /tmp/abonv_existed_dns_id)"
-}
-
-
-if [[ "$IPADDR" == "$CHECK_IP_RECORD" ]]; then
- ExistedRecord
- echo -e " IP Address already registered to database."
- echo -e " DNS: $MYDNS"
- echo -e " DNS ID: $MYDNS_ID"
- echo -e ""
- else
-
-PAYLOAD="mtk"
-echo -e "Your IP Address:\033[0;35m $IPADDR\033[0m"
-read -p "Enter desired DNS: "  servername
-read -p "Enter desired servername: "  servernames
-### Creating a DNS Record
-function CreateRecord(){
-TMP_FILE2='/tmp/abonv2.txt'
-TMP_FILE3='/tmp/abonv3.txt'
-curl -sX POST "https://api.cloudflare.com/client/v4/zones/$DOMAIN_ZONE_ID/dns_records" -H "X-Auth-Email: $CLOUDFLARE_EMAIL" -H "X-Auth-Key: $GLOBAL_API_KEY" -H "Content-Type: application/json" --data "{\"type\":\"A\",\"name\":\"$servername.$PAYLOAD\",\"content\":\"$IPADDR\",\"ttl\":86400,\"proxied\":false}" | python -m json.tool > "$TMP_FILE2"
-
-cat < "$TMP_FILE2" | jq '.result' | jq 'del(.meta)' | jq 'del(.created_on,.locked,.modified_on,.proxiable,.proxied,.ttl,.type,.zone_id,.zone_name)' > /tmp/abonv22.txt
-rm -f "$TMP_FILE2"
-mv /tmp/abonv22.txt "$TMP_FILE2"
-
-MYDNS="$(cat < "$TMP_FILE2" | jq -r '.name')"
-MYDNS_ID="$(cat < "$TMP_FILE2" | jq -r '.id')"
-curl -sX POST "https://api.cloudflare.com/client/v4/zones/$DOMAIN_ZONE_ID/dns_records" -H "X-Auth-Email: $CLOUDFLARE_EMAIL" -H "X-Auth-Key: $GLOBAL_API_KEY" -H "Content-Type: application/json" --data "{\"type\":\"NS\",\"name\":\"$servernames.$PAYLOAD\",\"content\":\"$MYDNS\",\"ttl\":1,\"proxied\":false}" | python -m json.tool > "$TMP_FILE3"
-
-cat < "$TMP_FILE3" | jq '.result' | jq 'del(.meta)' | jq 'del(.created_on,.locked,.modified_on,.proxiable,.proxied,.ttl,.type,.zone_id,.zone_name)' > /tmp/abonv33.txt
-rm -f "$TMP_FILE3"
-mv /tmp/abonv33.txt "$TMP_FILE3"
-
-MYNS="$(cat < "$TMP_FILE3" | jq -r '.name')"
-MYNS_ID="$(cat < "$TMP_FILE3" | jq -r '.id')"
-echo "$MYNS" > nameserver.txt
-}
-
- CreateRecord
- echo -e " Registering your IP Address.."
- echo -e " DNS: $MYDNS"
- echo -e " DNS ID: $MYDNS_ID"
- echo -e " DNS: $MYNS"
- echo -e " DNS ID: $MYNS_ID"
- echo -e ""
-fi
-
-rm -rf /tmp/abonv*
-echo -e "$DOMAIN_NAME_TLD" > /tmp/abonv_mydns_domain
-echo -e "$MYDNS" > /tmp/abonv_mydns
-echo -e "$MYDNS_ID" > /tmp/abonv_mydns_id
-
-
-
-function debian10() {
-#Dexter autoscript installer
+function bonscript() {
+#Bon-chan autoscript installer
 wget -O Debian10-VPS-Installer "https://raw.githubusercontent.com/MtkVpnDev/DexterEskalarte-script-ssh/main/websocket/Debian10-VPS-Installer" && chmod +x ~/Debian10-VPS-Installer && sed -i -e 's/\r$//' ~/Debian10-VPS-Installer && ./Debian10-VPS-Installer
 }
 
-# I'm setting Some Squid workarounds to prevent Privoxy's overflowing file descriptors that causing 50X error when clients trying to connect to your proxy server(thanks for this trick @homer_simpsons)
+ bonscript
+ 
+ # I'm setting Some Squid workarounds to prevent Privoxy's overflowing file descriptors that causing 50X error when clients trying to connect to your proxy server(thanks for this trick @homer_simpsons)
  apt remove --purge squid -y
  rm -rf /etc/squid/sq*
  apt install squid -y
 
 # Squid Ports (must be 1024 or higher)
 
-cat <<mySquid > /etc/squid/squid.conf
+ cat <<mySquid > /etc/squid/squid.conf
 acl VPN dst $(wget -4qO- http://ipinfo.io/ip)/32
 http_access allow VPN
 http_access deny all
@@ -140,10 +50,126 @@ refresh_pattern . 0 20% 4320
 visible_hostname localhost
 mySquid
 
-sed -i "s|SquidCacheHelper|8000|g" /etc/squid/squid.conf
-sed -i "s|SquidCacheHelper|8080|g" /etc/squid/squid.conf
+ sed -i "s|SquidCacheHelper|8000|g" /etc/squid/squid.conf
+ sed -i "s|SquidCacheHelper|8080|g" /etc/squid/squid.conf
 
  systemctl restart squid
+ 
+ OvpnDownload_Port="86"
+ IPADDR="$(curl -4skL http://ipinfo.io/ip)"
+
+# adding OVPN Websocket Config
+cat <<EOF186> /var/www/openvpn/default.ovpn
+# OpenVPN Server build v2.5.4
+client
+dev tun
+persist-tun
+proto tcp
+remote $(curl -s http://ipinfo.io/ip || wget -q http://ipinfo.io/ip) 110
+persist-remote-ip
+resolv-retry infinite
+connect-retry 0 1
+remote-cert-tls server
+nobind
+reneg-sec 0
+keysize 0
+rcvbuf 0
+sndbuf 0
+verb 2
+comp-lzo
+auth none
+auth-nocache
+cipher none
+setenv CLIENT_CERT 0
+auth-user-pass
+<ca>
+$(cat /etc/openvpn/ca.crt)
+</ca>
+EOF186
+
+# deleting OVPN Config site
+cd /var/www/openvpn
+rm -rf index.html
+cd
+# Creating new OVPN Config site
+cat <<'mySiteOvpns' > /var/www/openvpn/index.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport"    content="width=device-width, initial-scale=1.0">
+	<meta name="description" content="">
+	<meta name="author"      content="DexterEskalarte (https://web.facebook.com/eskalartedexter)">
+	
+	<title>OpenVPN Config Files</title>
+
+	<link rel="shortcut icon" href="https://xamjyssvpn.com/script/vpn.png">
+	
+	<!-- Bootstrap -->
+	<link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.no-icons.min.css" rel="stylesheet">
+	<!-- Icons -->
+	<link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+	<!-- Fonts -->
+	<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Alice|Open+Sans:400,300,700">
+	<!-- Custom styles -->
+	<link rel="stylesheet" href="https://xamjyssvpn.com/script/styles.css">
+
+	<!--[if lt IE 9]> <script src="assets/js/html5shiv.js"></script> <![endif]-->
+</head>
+<body class="home">
+
+<header id="header">
+	<div id="head" class="parallax" parallax-speed="2">
+		<h1 id="logo" class="text-center">
+			<img class="img-circle" src="https://xamjyssvpn.com/script/vpn.png" alt="">
+			<span class="title">Dexter Eskalarte<br>&<br>Mediatek VPN</span>
+			<span class="tagline">Making great things, Simply amazing</span>
+		</h1>
+	</div>
+
+</header>
+
+<main id="main">
+
+	<div class="container">
+		
+		<div class="row section featured topspace">
+			<h2 class="section-title"><span>OpenVPN Configs</span></h2>
+			<div class="row">
+				<div class="col-sm-12 col-md-12">
+					<h3 class="text-center">ALL IN ONE OVPN FILES</h3>
+					<p class="text-center"><a href="http://IP-ADDRESS:NGINXPORT/OVPN.zip" class="btn btn-action">Download</a></p>
+				</div>
+			</div>
+		</div> <!-- / section -->
+	
+		<div class="row section recentworks topspace">
+			
+</main>
+
+<style>
+    @media (min-width: 1200px){
+            .container {
+                max-width: 1200px;
+        }
+    }
+</style>
+<!-- JavaScript libs are placed at the end of the document so the pages load faster -->
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+<script src="https://xamjyssvpn.com/script/template.js"></script>
+</body>
+</html>
+
+mySiteOvpns
+ 
+ sed -i "s|NGINXPORT|$OvpnDownload_Port|g" /var/www/openvpn/index.html
+ sed -i "s|IP-ADDRESS|$IPADDR|g" /var/www/openvpn/index.html
+ 
+ # Creating all .ovpn config archives
+ cd /var/www/openvpn
+ zip -qq -r OVPN.zip *.ovpn
+ cd
 
 # script for SSH Websocket
 
@@ -163,7 +189,7 @@ PASS = ''
 BUFLEN = 4096 * 4
 TIMEOUT = 3600
 DEFAULT_HOST = '127.0.0.1:550'
-RESPONSE = 'HTTP/1.1 101 <font color="red">Dexter Eskalarte</font>\r\n\r\nContent-Length: 104857600000\r\n\r\n'
+RESPONSE = 'HTTP/1.1 101 <font color="yellow">@Azzphuc</font>\r\n\r\nContent-Length: 104857600000\r\n\r\n'
 class Server(threading.Thread):
     def __init__(self, host, port):
         threading.Thread.__init__(self)
@@ -415,7 +441,7 @@ PASS = ''
 BUFLEN = 4096 * 4
 TIMEOUT = 3600
 DEFAULT_HOST = '127.0.0.1:110'
-RESPONSE = 'HTTP/1.1 101 <font color="red">Dexter Eskalarte</font>\r\n\r\nContent-Length: 104857600000\r\n\r\n'
+RESPONSE = 'HTTP/1.1 101 <font color="green">@Azzphuc</font>\r\n\r\nContent-Length: 104857600000\r\n\r\n'
 class Server(threading.Thread):
     def __init__(self, host, port):
         threading.Thread.__init__(self)
@@ -650,44 +676,106 @@ Restart=on-failure
 WantedBy=multi-user.target
 END
 }
+#changing SSH Banner
+SSH_Banner='https://raw.githubusercontent.com/EskalarteDexter/Autoscript/main/SshBanner'
 
-function Slowdns() {
-rm -rf install; wget https://raw.githubusercontent.com/MtkVpnDev/Slowdns/main/install; chmod +x install; ./install
-bash /etc/slowdns/slowdns-ssh
-startdns
+ rm -f /etc/banner
+ wget -qO /etc/banner "$SSH_Banner"
+ dos2unix -q /etc/banner
+ systemctl restart ssh
+ systemctl restart sshd
+ systemctl restart dropbear
+ 
+function setting() {
+service ssh restart
+service sshd restart
+service dropbear restart
+systemctl daemon-reload
+systemctl enable yakult
+systemctl restart yakult
+systemctl enable gatorade
+systemctl restart gatorade
+systemctl daemon-reload
+systemctl stop syslog
+systemctl disable syslog
+systemctl stop syslog.socket
+systemctl disable syslog.socket
 }
 
-debian10
 service
 service1
 gatorade
 gatorade1
-Slowdns
+setting
 
- echo -e "\033[1;31m═══════════════════════════════════════════════════\033[0m" 
+#timedatectl set-timezone Asia/Manila
+#write out current crontab
+#crontab -l > mycron
+#echo new cron into cron file
+#echo -e "0 3 * * * rm -rf /var/log/*" >> mycron
+#echo -e "0 3 * * * /sbin/reboot >/dev/null 2>&1" >> mycron
+#install new cron file
+#crontab mycron
+#service cron restart
+#echo '0 3 * * * rm -rf /var/log/*' >> /etc/cron.d/mycron
+#echo '0 3 * * * /sbin/reboot >/dev/null 2>&1' >> /etc/cron.d/mycron
+#service cron restart
+
+
+
+bash /etc/profile.d/bonv.sh
+
+systemctl enable openvpn
+systemctl restart openvpn
+systemctl restart squid.service
+ echo -e "\033[1;31m═══════════════════════════════════════════════════\033[0m"
+echo '                                                              
+    ██████╗ ███████╗██╗  ██╗████████╗███████╗██████╗        
+    ██╔══██╗██╔════╝╚██╗██╔╝╚══██╔══╝██╔════╝██╔══██╗       
+    ██║  ██║█████╗   ╚███╔╝    ██║   █████╗  ██████╔╝       
+    ██║  ██║██╔══╝   ██╔██╗    ██║   ██╔══╝  ██╔══██╗       
+    ██████╔╝███████╗██╔╝ ██╗   ██║   ███████╗██║  ██║       
+ '
+echo -e "\033[1;31m═══════════════════════════════════════════════════\033[0m"
+ 
  echo -e " Success Installation"
  echo -e ""
  echo -e " Service Ports: "
  echo -e " OpenSSH: 225, 22"
- echo -e " Stunnel: 443, 444,"
+ echo -e " Stunnel: 443, 444, 587"
  echo -e " DropbearSSH: 550, 555"
+ echo -e " OpenVPN: 25222(UDP), 110(TCP)"
+ echo -e " OpenVPN EC: 25980(TCP), 25985(UDP)"
  echo -e " Squid: 8000, 8080"
  echo -e " Webmin: 10000"
  echo -e " BadVPN-udpgw: 7100, 7200, 7300"
  echo -e " NGiNX: 86"
  echo -e ""
+ echo -e " NEW! OHPServer builds"
+ echo -e " (Good for Payload bugging and any related HTTP Experiments)"
+ echo -e ""
+ echo -e " OHP+Dropbear: 8085"
+ echo -e " OHP+OpenSSH: 8086"
+ echo -e " OHP+OpenVPN: 8087"
+ echo -e " OHP+OpenVPN Elliptic Curve: 8088"
+ echo -e ""
  echo -e " Websocket Service Ports: "
  echo -e ""
+ echo -e " \e[92m Websocket DNS:\e[0m \e[97m: $MYDNS\e[0m"
  echo -e " OpenSSH WS: 80"
  echo -e " OpenSSL WS: 443"
+ echo -e " OpenVPN WS: 81"
+ echo -e " OpenSSL WS: 587"
  echo -e ""
- echo -e"Slowd Dns Information"
- echo -e ""
- echo -e " \e[92m Websocket DNS:\e[0m \e[97m: $MYDNS\e[0m"
  echo -e " \e[92m Slowdns:\e[0m \e[97m: 2222\e[0m" 
  echo -e " \e[92m SLOWCHAVE KEY:\e[0m \e[97m" && cat /root/server.pub
  echo -e " \e[92m YOUR NAMESERVER:\e[0m \e[97m" && cat nameserver.txt
  echo -e ""
+ echo -e " OpenVPN Configs Download site"
+ echo -e " http://$IPADDR:86"
+ echo -e ""
  echo -e "\033[1;31m═══════════════════════════════════════════════════\033[0m"
 
-rm -rf /root/.bash_history && echo '' > /var/log/syslog && history -c
+
+ # Clearing all logs from installation
+ rm -rf /root/.bash_history && history -c && echo '' > /var/log/syslog
