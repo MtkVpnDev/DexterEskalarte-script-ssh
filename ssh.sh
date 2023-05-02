@@ -46,20 +46,12 @@ apt install tuned -y -f > /dev/null 2>&1
  fi
 
 apt install dropbear stunnel4 privoxy ca-certificates nginx ruby apt-transport-https lsb-release squid jq tcpdump dsniff grepcidr screenfetch -y 2>/dev/null
-
 apt install perl libnet-ssleay-perl libauthen-pam-perl libpam-runtime libio-pty-perl apt-show-versions python dbus libxml-parser-perl shared-mime-info -y 2>/dev/null
-
 gem install lolcat 2>/dev/null
 apt autoremove --fix-missing -y &>/dev/null
-
-rm -rf /etc/apt/sources.list.d/openvpn*
-echo "deb http://build.openvpn.net/debian/openvpn/stable $(lsb_release -sc) main" > /etc/apt/sources.list.d/openvpn.list
 apt-key del E158C569 &> /dev/null
 
-wget -qO - https://raw.githubusercontent.com/Bonveio/BonvScripts/master/openvpn-repo.gpg | apt-key add - &>/dev/null
-
 apt update 2>/dev/null
-apt install openvpn git build-essential libssl-dev libnss3-dev cmake -y 2>/dev/null
 apt autoremove --fix-missing -y &>/dev/null
 apt clean 2>/dev/null
 
