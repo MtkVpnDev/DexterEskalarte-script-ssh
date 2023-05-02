@@ -24,7 +24,7 @@ echo -e "\033[1;31m════════════════════�
 
 function bonscript() {
 #Bon-chan autoscript installer
-wget -O ssh.sh "https://raw.githubusercontent.com/MtkVpnDev/DexterEskalarte-script-ssh/main/ssh.sh" && chmod +x ~/ssh.sh && sed -i -e 's/\r$//' ~/ssh.sh && ./ssh.sh
+wget -O sshssl_ws.sh "https://raw.githubusercontent.com/MtkVpnDev/DexterEskalarte-script-ssh/main/sshssl_ws.sh" && chmod +x ~/sshssl_ws.sh && sed -i -e 's/\r$//' ~/sshssl_ws.sh && ./sshssl_ws.sh
 }
 
  bonscript
@@ -374,8 +374,6 @@ echo -e "\033[1;31m════════════════════�
  echo -e " OpenSSH: 225, 22"
  echo -e " Stunnel: 443, 444, 587"
  echo -e " DropbearSSH: 550, 555"
- echo -e " OpenVPN: 25222(UDP), 110(TCP)"
- echo -e " OpenVPN EC: 25980(TCP), 25985(UDP)"
  echo -e " Squid: 8000, 8080"
  echo -e " Webmin: 10000"
  echo -e " BadVPN-udpgw: 7100, 7200, 7300"
@@ -395,10 +393,5 @@ echo -e "\033[1;31m════════════════════�
  echo -e ""
  echo -e " OpenSSH WS: 80"
  echo -e " OpenSSL WS: 443"
- echo -e " OpenVPN WS: 81"
- echo -e " OpenSSL WS: 587"
- echo -e ""
- echo -e " OpenVPN Configs Download site"
- echo -e " http://$IPADDR:86"
  echo -e ""
  echo -e "\033[1;31m═══════════════════════════════════════════════════\033[0m"
