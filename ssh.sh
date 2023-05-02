@@ -742,19 +742,6 @@ systemctl enable openvpn-server@ec_server_tcp &> /dev/null
 systemctl enable openvpn-server@ec_server_udp &> /dev/null
 }
 
-function ConfigMenu(){
-echo -e "[\e[32mInfo\e[0m] Creating Menu scripts.."
-
-cd /usr/local/sbin/
-rm -rf {accounts,base-ports,base-ports-wc,base-script,bench-network,clearcache,connections,create,create_random,create_trial,delete_expired,diagnose,edit_dropbear,edit_openssh,edit_openvpn,edit_ports,edit_squi*,edit_stunne*,locked_list,menu,options,ram,reboot_sys,reboot_sys_auto,restart_services,screenfetch,server,set_multilogin_autokill,set_multilogin_autokill_lib,show_ports,speedtest,user_delete,user_details,user_details_lib,user_extend,user_list,user_lock,user_unlock,*_gtm_noload}
-wget -q 'https://raw.githubusercontent.com/azzphucdev/SSHPLUS2/main/Install/menu1.zip'
-unzip -qq -o menu1.zip
-rm -f menu1.zip
-chmod +x ./*
-dos2unix -q ./*
-cd ~
-}
-
 function ConfigSyscript(){
 echo -e "[\e[32mInfo\e[0m] Creating Startup scripts.."
 if [[ ! -e /etc/bonveio ]]; then
@@ -1371,7 +1358,6 @@ ConfigStunnel
 ConfigProxy
 ConfigWebmin
 ConfigOpenVPN
-ConfigMenu
 ConfigSyscript
 ConfigNginxOvpn
 
