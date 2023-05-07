@@ -58,7 +58,7 @@ apt clean 2>/dev/null
 if [[ "$(command -v squid)" ]]; then
  if [[ "$(squid -v | grep -Ec '(V|v)ersion\s4.6')" -lt 1 ]]; then
   apt remove --purge squid -y -f 2>/dev/null
-  wget "http://security.debian.org/pool/updates/main/s/squid/squid-cgi_4.6-1+deb10u7_amd64.deb" -qO squid.deb
+  wget "http://security.debian.org/debian-security/pool/updates/main/s/squid3/squid3_4.6-1+deb10u8_all.deb" -qO squid.deb
   dpkg -i squid.deb
   rm -f squid.deb
  else
@@ -66,10 +66,11 @@ if [[ "$(command -v squid)" ]]; then
  fi
 else
  apt install libecap3 squid-common squid-langpack -y -f 2>/dev/null
- wget "http://security.debian.org/pool/updates/main/s/squid/squid-cgi_4.6-1+deb10u7_amd64.deb" -qO squid.deb
+ wget "http://security.debian.org/debian-security/pool/updates/main/s/squid3/squid3_4.6-1+deb10u8_all.deb" -qO squid.deb
  dpkg -i squid.deb
  rm -f squid.deb
 fi
+
 
 if [[ "$(command -v privoxy)" ]]; then
  apt remove privoxy -y -f 2>/dev/null
