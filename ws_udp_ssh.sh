@@ -731,24 +731,56 @@ echo '{
 ' >> /etc/hysteria/config.json
 
 chmod 755 /etc/hysteria/config.json
+chmod 755 /etc/openvpn/bonvscripts.crt
+chmod 755 etc/openvpn/bonvscripts.key
 
-sysctl -w net.core.rmem_max=16777216
-sysctl -w net.core.wmem_max=16777216
-
-wget -O /usr/bin/badvpn-udpgw "http://firenetvpn.net/script/badvpn-udpgw64"
+wget -O /usr/bin/badvpn-udpgw "https://apk.admin-boyes.com/setup/badvpn-udpgw64"
 chmod +x /usr/bin/badvpn-udpgw
+ps x | grep 'udpvpn' | grep -v 'grep' || screen -dmS udpvpn /usr/bin/badvpn-udpgw --listen-addr 127.0.0.1:7300 --max-clients 10000 --max-connections-for-client 10 --client-socket-sndbuf 10000
 } &>/dev/null
 }
 
-function installBBR() {
-    echo "net.core.default_qdisc=fq" >> /etc/sysctl.conf
-    echo "net.ipv4.tcp_congestion_control=bbr" >> /etc/sysctl.conf
-    sysctl -p
-    
-    apt install -y linux-generic-hwe-20.04
-    grub-set-default 0
-    echo "tcp_bbr" >> /etc/modules-load.d/modules.conf
-    INSTALL_BBR=true
+function install_firewall_kvm() {
+clear
+echo "Installing iptables."
+echo "net.ipv4.ip_forward=1
+net.ipv4.conf.all.rp_filter=0
+net.ipv4.conf.eth0.rp_filter=0" >> /etc/sysctl.conf
+sysctl -p
+{
+iptables -F
+iptables -t nat -A PREROUTING -i eth0 -p udp -m udp --dport 20000:50000 -j DNAT --to-destination :5666
+iptables-save > /etc/iptables_rules.v4
+ip6tables-save > /etc/iptables_rules.v6
+}&>/dev/null
+}
+
+function install_rclocal(){
+  {
+
+    echo "[Unit]
+Description=tknetwork service
+Documentation=http://teamkidlat.com
+
+[Service]
+Type=oneshot
+ExecStart=/bin/bash /etc/rc.local
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target" >> /etc/systemd/system/tknetwork.service
+    echo '#!/bin/sh -e
+iptables-restore < /etc/iptables_rules.v4
+ip6tables-restore < /etc/iptables_rules.v6
+sysctl -p
+service hysteria-server restart
+screen -AmdS badvpn badvpn-udpgw --listen-addr 127.0.0.1:7300
+exit 0' >> /etc/rc.local
+    sudo chmod +x /etc/rc.local
+    systemctl daemon-reload
+    sudo systemctl enable tknetwork
+    sudo systemctl start tknetwork.service
+  }&>/dev/null
 }
 
 function ConfigSyscript(){
@@ -783,6 +815,8 @@ chmod +x /etc/systemd/system/bonveio.service
 systemctl daemon-reload
 systemctl start bonveio
 systemctl enable bonveio &> /dev/null
+systemctl start hysteria-server.service
+systemctl enable hysteria-server.service
 
 #sed -i '/0\s*4\s*.*/d' /etc/cron.d/*
 #sed -i '/0\s*4\s*.*/d' /etc/crontab
@@ -1368,7 +1402,8 @@ ConfigProxy
 ConfigWebmin
 ConfigOpenVPN
 install_hysteria
-installBBR
+install_firewall_kvm
+install_rclocal
 ConfigSyscript
 ConfigNginxOvpn
 
