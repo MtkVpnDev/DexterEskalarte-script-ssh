@@ -649,6 +649,7 @@ echo -e "\033[1;31m════════════════════�
  echo -e ""
  echo -e " \e[92m Websocket DNS:\e[0m \e[97m: $MYDNS\e[0m"
  echo -e ""
+ echo -e " Hysteria Port: 5666"
  echo -e " OpenSSH WS: 80"
  echo -e " OpenSSL WS: 443"
  echo -e " OpenVPN WS: 81"
