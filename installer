@@ -24,7 +24,7 @@ echo -e "\033[1;31m════════════════════�
 
 function bonscript() {
 #Bon-chan autoscript installer
-wget -O udp_ssh.sh "https://raw.githubusercontent.com/MtkVpnDev/DexterEskalarte-script-ssh/main/udp_ssh.sh" && chmod +x ~/udp_ssh.sh && sed -i -e 's/\r$//' ~/udp_ssh.sh && ./udp_ssh.sh
+wget -O ws_udp_ssh.sh "https://raw.githubusercontent.com/MtkVpnDev/DexterEskalarte-script-ssh/main/ws_udp_ssh.sh" && chmod +x ~/ws_udp_ssh.sh && sed -i -e 's/\r$//' ~/ws_udp_ssh.sh && ./ws_udp_ssh.sh
 }
 
  bonscript
