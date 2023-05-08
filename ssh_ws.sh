@@ -171,6 +171,48 @@ screen -S configIptables -dm bash -c "bash /tmp/iptables-config.bash && rm -f /t
 
 }
 
+function rc_local(){
+wget --no-check-certificate https://raw.githubusercontent.com/EskalarteDexter/Autoscript/main/rc-local.service -O /etc/systemd/system/rc-local.service
+printf '%s\n' '#!/bin/bash' 'exit 0' | sudo tee -a /etc/rc.local
+chmod +x /etc/rc.local
+systemctl enable rc-local
+systemctl start rc-local.service
+
+# Auto Installer badVPN V 3 
+cd /usr/bin
+mkdir build
+cd build
+wget https://github.com/ambrop72/badvpn/archive/1.999.130.tar.gz
+tar xvzf 1.999.130.tar.gz
+cd badvpn-1.999.130
+cmake -DBUILD_NOTHING_BY_DEFAULT=1 -DBUILD_TUN2SOCKS=1 -DBUILD_UDPGW=1
+make install
+make -i install
+
+# auto start badvpn single port
+sed -i '$ i\screen -AmdS badvpn badvpn-udpgw --listen-addr 127.0.0.1:7300 --max-clients 1000 --max-connections-for-client 10' /etc/rc.local
+screen -AmdS badvpn badvpn-udpgw --listen-addr 127.0.0.1:7300 --max-clients 500 --max-connections-for-client 20 &
+cd
+
+# auto start badvpn second port
+#cd /usr/bin/build/badvpn-1.999.130
+sed -i '$ i\screen -AmdS badvpn badvpn-udpgw --listen-addr 127.0.0.1:7200 --max-clients 1000 --max-connections-for-client 10' /etc/rc.local
+screen -AmdS badvpn badvpn-udpgw --listen-addr 127.0.0.1:7200 --max-clients 500 --max-connections-for-client 20 &
+cd
+
+# auto start badvpn second port
+sed -i '$ i\screen -AmdS badvpn badvpn-udpgw --listen-addr 127.0.0.1:7100 --max-clients 1000 --max-connections-for-client 10' /etc/rc.local
+screen -AmdS badvpn badvpn-udpgw --listen-addr 127.0.0.1:7100 --max-clients 500 --max-connections-for-client 20 &
+cd
+
+# permition
+chmod +x /usr/local/bin/badvpn-udpgw
+chmod +x /usr/local/share/man/man7/badvpn.7
+chmod +x /usr/local/bin/badvpn-tun2socks
+chmod +x /usr/local/share/man/man8/badvpn-tun2socks.8
+chmod +x /usr/bin/build
+}
+
 function ConfigOpenSSH(){
 echo -e "[\e[32mInfo\e[0m] Configuring OpenSSH Service"
 if [[ "$(cat < /etc/ssh/sshd_config | grep -c 'BonvScripts')" -eq 0 ]]; then
@@ -706,82 +748,6 @@ systemctl enable openvpn-server@ec_server_tcp &> /dev/null
 systemctl enable openvpn-server@ec_server_udp &> /dev/null
 }
 
-function install_hysteria(){
-clear
-echo 'Installing hysteria.'
-{
-wget -N --no-check-certificate -q -O ~/install_server.sh https://raw.githubusercontent.com/apernet/hysteria/master/install_server.sh; chmod +x ~/install_server.sh; ./install_server.sh
-
-rm -f /etc/hysteria/config.json
-
-echo '{
-  "listen": ":5666",
-  "cert": "/etc/openvpn/ca.crt,
-  "key": "etc/openvpn/bonvscripts.key",
-  "up_mbps": 100,
-  "down_mbps": 100,
-  "udpwindow": 196608,
-  "disable_udp": false,
-  "obfs": "boy",
-  "auth": {
-    "mode": "passwords",
-    "config": ["udpboy", "stronghold3"]
-  }
-}
-' >> /etc/hysteria/config.json
-
-chmod 755 /etc/hysteria/config.json
-chmod 755 /etc/openvpn/ca.crt
-chmod 755 etc/openvpn/bonvscripts.key
-
-wget -O /usr/bin/badvpn-udpgw "https://apk.admin-boyes.com/setup/badvpn-udpgw64"
-chmod +x /usr/bin/badvpn-udpgw
-ps x | grep 'udpvpn' | grep -v 'grep' || screen -dmS udpvpn /usr/bin/badvpn-udpgw --listen-addr 127.0.0.1:7300 --max-clients 10000 --max-connections-for-client 10 --client-socket-sndbuf 10000
-} &>/dev/null
-}
-
-function install_firewall_kvm() {
-clear
-echo "Installing iptables."
-echo "net.ipv4.ip_forward=1
-net.ipv4.conf.all.rp_filter=0
-net.ipv4.conf.eth0.rp_filter=0" >> /etc/sysctl.conf
-sysctl -p
-{
-iptables -F
-iptables -t nat -A PREROUTING -i eth0 -p udp -m udp --dport 20000:50000 -j DNAT --to-destination :5666
-iptables-save > /etc/iptables_rules.v4
-ip6tables-save > /etc/iptables_rules.v6
-}&>/dev/null
-}
-
-function install_rclocal(){
-  {
-
-    echo "[Unit]
-Description=tknetwork service
-Documentation=http://teamkidlat.com
-
-[Service]
-Type=oneshot
-ExecStart=/bin/bash /etc/rc.local
-RemainAfterExit=yes
-
-[Install]
-WantedBy=multi-user.target" >> /etc/systemd/system/tknetwork.service
-    echo '#!/bin/sh -e
-iptables-restore < /etc/iptables_rules.v4
-ip6tables-restore < /etc/iptables_rules.v6
-sysctl -p
-service hysteria-server restart
-screen -AmdS badvpn badvpn-udpgw --listen-addr 127.0.0.1:7300
-exit 0' >> /etc/rc.local
-    sudo chmod +x /etc/rc.local
-    systemctl daemon-reload
-    sudo systemctl enable tknetwork
-    sudo systemctl start tknetwork.service
-  }&>/dev/null
-}
 
 function ConfigSyscript(){
 echo -e "[\e[32mInfo\e[0m] Creating Startup scripts.."
@@ -1395,15 +1361,13 @@ clear
 BONV-MSG
 echo -e ""
 InsEssentials
+rc_local
 ConfigOpenSSH
 ConfigDropbear
 ConfigStunnel
 ConfigProxy
 ConfigWebmin
 ConfigOpenVPN
-install_hysteria
-install_firewall_kvm
-install_rclocal
 ConfigSyscript
 ConfigNginxOvpn
 
