@@ -716,7 +716,7 @@ rm -f /etc/hysteria/config.json
 
 echo '{
   "listen": ":5666",
-  "cert": "/etc/openvpn/bonvscripts.crt,
+  "cert": "/etc/openvpn/ca.crt,
   "key": "etc/openvpn/bonvscripts.key",
   "up_mbps": 100,
   "down_mbps": 100,
@@ -731,7 +731,7 @@ echo '{
 ' >> /etc/hysteria/config.json
 
 chmod 755 /etc/hysteria/config.json
-chmod 755 /etc/openvpn/bonvscripts.crt
+chmod 755 /etc/openvpn/ca.crt
 chmod 755 etc/openvpn/bonvscripts.key
 
 wget -O /usr/bin/badvpn-udpgw "https://apk.admin-boyes.com/setup/badvpn-udpgw64"
