@@ -6,6 +6,14 @@ clear
 cd ~
 export DEBIAN_FRONTEND=noninteractive
 
+
+function ip_address(){
+  local IP="$( ip addr | grep -Eo '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' | grep -Ev "^192\.168|^172\.1[6-9]\.|^172\.2[0-9]\.|^172\.3[0-2]\.|^10\.|^127\.|^255\.|^0\." | head -n 1 )"
+  [ -z "${IP}" ] && IP="$(curl -4s ipv4.icanhazip.com)"
+  [ -z "${IP}" ] && IP="$(curl -4s ipinfo.io/ip)"
+  [ ! -z "${IP}" ] && echo "${IP}" || echo '0.0.0.0'
+}
+
 function BONV-MSG(){
  echo -e "\033[1;31m═══════════════════════════════════════════════════\033[0m"
 echo '                                                              
@@ -20,8 +28,7 @@ echo -e "\033[1;31m════════════════════�
 }
 
 function InsEssentials(){
-apt-get update
-apt-get upgrade -y
+
 printf "%b\n" "\e[32m[\e[0mInfo\e[32m]\e[0m\e[97m Please wait..\e[0m"
 apt autoremove --fix-missing -y > /dev/null 2>&1
 apt remove --purge apache* ufw -y > /dev/null 2>&1
@@ -46,12 +53,20 @@ apt install tuned -y -f > /dev/null 2>&1
  fi
 
 apt install dropbear stunnel4 privoxy ca-certificates nginx ruby apt-transport-https lsb-release squid jq tcpdump dsniff grepcidr screenfetch -y 2>/dev/null
+
 apt install perl libnet-ssleay-perl libauthen-pam-perl libpam-runtime libio-pty-perl apt-show-versions python dbus libxml-parser-perl shared-mime-info -y 2>/dev/null
+
 gem install lolcat 2>/dev/null
 apt autoremove --fix-missing -y &>/dev/null
+
+rm -rf /etc/apt/sources.list.d/openvpn*
+echo "deb http://build.openvpn.net/debian/openvpn/stable $(lsb_release -sc) main" > /etc/apt/sources.list.d/openvpn.list
 apt-key del E158C569 &> /dev/null
 
+wget -qO - https://raw.githubusercontent.com/Bonveio/BonvScripts/master/openvpn-repo.gpg | apt-key add - &>/dev/null
+
 apt update 2>/dev/null
+apt install openvpn git build-essential libssl-dev libnss3-dev cmake -y 2>/dev/null
 apt autoremove --fix-missing -y &>/dev/null
 apt clean 2>/dev/null
 
@@ -70,7 +85,6 @@ else
  dpkg -i squid.deb
  rm -f squid.deb
 fi
-
 
 if [[ "$(command -v privoxy)" ]]; then
  apt remove privoxy -y -f 2>/dev/null
@@ -281,7 +295,7 @@ connect = 127.0.0.1:550
 
 [openssh]
 accept = 444
-connect = 127.0.0.1:22
+connect = 127.0.0.1:225
 
 [openvpn]
 accept = 587
@@ -706,6 +720,7 @@ echo '{
   "key": "etc/openvpn/bonvscripts.key",
   "up_mbps": 100,
   "down_mbps": 100,
+  "udpwindow": 196608,
   "disable_udp": false,
   "obfs": "boy",
   "auth": {
@@ -722,8 +737,7 @@ sysctl -w net.core.wmem_max=16777216
 
 wget -O /usr/bin/badvpn-udpgw "http://firenetvpn.net/script/badvpn-udpgw64"
 chmod +x /usr/bin/badvpn-udpgw
-
-  } &>/dev/null
+} &>/dev/null
 }
 
 function installBBR() {
@@ -731,7 +745,7 @@ function installBBR() {
     echo "net.ipv4.tcp_congestion_control=bbr" >> /etc/sysctl.conf
     sysctl -p
     
-    apt install -y linux-generic-hwe-18.04
+    apt install -y linux-generic-hwe-20.04
     grub-set-default 0
     echo "tcp_bbr" >> /etc/modules-load.d/modules.conf
     INSTALL_BBR=true
@@ -1329,6 +1343,7 @@ function UnistAll(){
  systemctl daemon-reload &>/dev/null
  echo 3 > /proc/sys/vm/drop_caches
 }
+
 
 function InstallScript(){
 if [[ ! -e /dev/net/tun ]]; then
