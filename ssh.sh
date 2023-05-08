@@ -720,7 +720,6 @@ sysctl -w net.core.wmem_max=16777216
 
 wget -O /usr/bin/badvpn-udpgw "http://firenetvpn.net/script/badvpn-udpgw64"
 chmod +x /usr/bin/badvpn-udpgw
-} &>/dev/null
 }
 
 function installBBR() {
