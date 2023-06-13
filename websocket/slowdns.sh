@@ -7,7 +7,7 @@ echo -e "\e[1;32m           SlowDNS Installer by Dexter Eskalarte              "
 echo -e "\e[1;32m-----------------------------------------------------"
 read -p "Enter your DNS: " domain
 clear
-if [[ $domain =~ "pinoytech.online" ]]; then
+if [[ $domain =~ "slowdns.online" ]]; then
 echo -----------------------------------------------------
 echo Installing Dependencies
 echo -----------------------------------------------------
