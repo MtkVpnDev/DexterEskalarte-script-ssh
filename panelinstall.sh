@@ -6,10 +6,10 @@ MyScriptName='Mediatek Panel'
 MYIP=$(wget -qO- ipv4.icanhazip.com);
 
 # Default Password
-DatabasePass='EskalarteDexter'
+#DatabasePass='EskalarteDexter'
 
 # Default Database
-DatabaseName='mtkvpndev'
+#DatabaseName='mtkvpndev'
 
 # Server local time
 MyVPS_Time='Asia/Manila'
