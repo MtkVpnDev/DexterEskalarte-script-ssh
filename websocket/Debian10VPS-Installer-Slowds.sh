@@ -53,7 +53,7 @@ if [[ "$IPADDR" == "$CHECK_IP_RECORD" ]]; then
  echo -e ""
  else
 
-PAYLOAD="mtk"
+PAYLOAD="mtkvpn"
 echo -e "Your IP Address:\033[0;35m $IPADDR\033[0m"
 read -p "Enter desired DNS: "  servername
 read -p "Enter desired servername: "  servernames
