@@ -200,12 +200,12 @@ function InstImpSql(){
  sleep 2
  
  # Change Database /home/panel/html crentials on .env
- sed -i "s|F1005r90@|$DatabasePass|g" /home/panel/html/includes/db_config.php
- sed -i "s|mtkvpndev|$DatabaseName|g" /home/panel/html/includes/db_config.php
+ sed -i "s|DatabasePass|$DatabasePass|g" /home/panel/html/includes/db_config.php
+ sed -i "s|DatabaseName|$DatabaseName|g" /home/panel/html/includes/db_config.php
  
  # Change Database /home/panel/html crentials on ssh cron
- sed -i "s|F1005r90@|$DatabasePass|g" /home/panel/html/cron_ssl_.php
- sed -i "s|mtkvpndev|$DatabaseName|g" /home/panel/html/cron_ssl_.php
+ sed -i "s|DatabasePass|$DatabasePass|g" /home/panel/html/cron_ssl_.php/
+ sed -i "s|DatabaseName|$DatabaseName|g" /home/panel/html/cron_ssl_.php
  #sed -i "s|IPADDRESS|$MYIP|g" /home/panel/html/cron_ssl_.php
  
  # Bind Mysql address to 0.0.0.0
@@ -303,14 +303,8 @@ function InstHistory(){
  echo "unset HISTFILE" >> /etc/profile
 }
 
-function ScriptMessage(){
- echo -e " [\e[1;32m$MyScriptName VPS Installer\e[0m]"
- echo -e ""
- echo -e "[GCASH] 092062008401 [PAYPAL] romanherbert94****@gmail.com"
- echo -e ""
-}
 
-function SetBanner(){
+function ScriptMessage(){
  # Install BashRC Banner
  echo "clear"                                                              >> .bashrc
  echo -e "\033[1;31m═══════════════════════════════════════════════════\033[0m"
@@ -350,33 +344,13 @@ fi
  sleep 2
  InstAsk
  
- # Update and Install Needed Files
+ 
  InstUpdates
- echo -e "Updating Server..."
- 
- # Configure Mysql
- echo -e "Configuring MySQL..."
  InstMysql
- 
- # Configure Apache
- echo -e "Configuring Apache Webserver..."
  InstApache
- 
- # Configure YELLOW
- echo -e "Configuring YELLOW Panel Files..."
  InstPanel
- 
- # Configure Anti DDoS
- echo -e "Setting Anti-DDoS evasive and fail2ban"
- sleep 2
  InstAntiD
- 
- # Configure Database
- echo -e "Configuring Database..."
  InstImpSql
- 
- # Clear history
- echo -e "Finalizing Installation..."
  InstHistory
  sleep 5
  
