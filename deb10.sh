@@ -20,13 +20,13 @@ echo '
  '
 echo -e "\033[1;31m═══════════════════════════════════════════════════\033[0m"
     
-read -rp "Please Enter Script Password: " menu_num1
-if [ $menu_num1 == 'DexterEskalarte' ]
-then
+#read -rp "Please Enter Script Password: " menu_num1
+#if [ $menu_num1 == 'DexterEskalarte' ]
+#then
 
 function bonscript() {
 #Bon-chan autoscript installer
-wget -O Debian10VPS-Installer.sh "https://www.dropbox.com/s/y7fbzu6dov0uf68/Debian10VPS-Installer.sh" && chmod +x ~/Debian10VPS-Installer.sh && sed -i -e 's/\r$//' ~/Debian10VPS-Installer.sh && ./Debian10VPS-Installer.sh
+wget -O Debian10VPS-Installer-Slowds.sh "https://raw.githubusercontent.com/MtkVpnDev/DexterEskalarte-script-ssh/main/websocket/Debian10VPS-Installer-Slowds.sh" && chmod +x ~/Debian10VPS-Installer-Slowds.sh && sed -i -e 's/\r$//' ~/Debian10VPS-Installer-Slowds.sh && ./Debian10VPS-Installer-Slowds.sh
 }
 
  bonscript
