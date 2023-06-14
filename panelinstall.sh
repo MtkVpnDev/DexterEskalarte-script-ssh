@@ -6,13 +6,15 @@ MyScriptName='Mediatek Panel'
 MYIP=$(wget -qO- ipv4.icanhazip.com);
 
 # Default Password
-#DatabasePass='EskalarteDexter'
+DatabasePass='F1005r90@'
 
 # Default Database
-#DatabaseName='mtkvpndev'
+DatabaseName='mtkvpndev'
 
 # Server local time
 MyVPS_Time='Asia/Manila'
+
+
 
 function InstAsk(){
  clear
@@ -21,11 +23,11 @@ function InstAsk(){
  echo "You can leave the default option and just hit enter if you agree with the option"
  echo ""
  echo "First I need to know the new password of MySQL root user:"
- read -p "Password: " -e -i DatabasePass
+ read -p "Password: " -e -i $DatabasePass
  echo ""
  echo "Name the Database Name for YELLOW Panel"
  echo " Please, use one word only, no special characters other than Underscore (_)"
- read -p " Database Name: " -e -i DatabaseName
+ read -p " Database Name: " -e -i $DatabaseName
   echo ""
  echo "You need to have a domain pointed in your server IP for before install"
  read -p " Domain: " -e -i ydomain
