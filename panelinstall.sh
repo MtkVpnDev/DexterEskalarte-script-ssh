@@ -194,7 +194,7 @@ function InstPanel(){
 
 function InstImpSql(){
  # Pull Fixed SQL
- wget -O /home/panel/html/ypanel.sql https://www.dropbox.com/s/mfuod8bjj3u6f5o/mysql.sql?dl=0
+ wget -O /home/panel/html/ypanel.sql https://www.dropbox.com/s/0k3x17n4dgjio0k/mysql.sql?dl=0
  # Import SQL to Database
  mysql -u root -p$DatabasePass $DatabaseName < /home/panel/html/ypanel.sql
  sleep 2
