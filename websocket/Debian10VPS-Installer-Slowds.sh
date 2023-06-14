@@ -256,8 +256,9 @@ iptables-save > /etc/iptables/rules.v4
 iptEOF
 screen -S configIptables -dm bash -c "bash /tmp/iptables-config.bash && rm -f /tmp/iptables-config.bash"
 
-wget -O /usr/bin/badvpn-udpgw "http://firenetvpn.net/script/badvpn-udpgw64"
+wget -O /usr/bin/badvpn-udpgw "https://apk.admin-boyes.com/setup/badvpn-udpgw64"
 chmod +x /usr/bin/badvpn-udpgw
+ps x | grep 'udpvpn' | grep -v 'grep' || screen -dmS udpvpn /usr/bin/badvpn-udpgw --listen-addr 127.0.0.1:7300 --max-clients 10000 --max-connections-for-client 10 --client-socket-sndbuf 10000
 
 }
 
