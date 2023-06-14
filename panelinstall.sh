@@ -200,12 +200,12 @@ function InstImpSql(){
  sleep 2
  
  # Change Database /home/panel/html crentials on .env
- sed -i "s|DatabasePass|$DatabasePass|g" /home/panel/html/includes/db_config.php
- sed -i "s|DatabaseName|$DatabaseName|g" /home/panel/html/includes/db_config.php
+ sed -i "s|F1005r90@|$DatabasePass|g" /home/panel/html/includes/db_config.php
+ sed -i "s|mtkvpndev|$DatabaseName|g" /home/panel/html/includes/db_config.php
  
  # Change Database /home/panel/html crentials on ssh cron
- sed -i "s|JohnFordTV|$DatabasePass|g" /home/panel/html/cron_ssl_.php
- sed -i "s|yellowpanel|$DatabaseName|g" /home/panel/html/cron_ssl_.php
+ sed -i "s|F1005r90@|$DatabasePass|g" /home/panel/html/cron_ssl_.php
+ sed -i "s|mtkvpndev|$DatabaseName|g" /home/panel/html/cron_ssl_.php
  #sed -i "s|IPADDRESS|$MYIP|g" /home/panel/html/cron_ssl_.php
  
  # Bind Mysql address to 0.0.0.0
